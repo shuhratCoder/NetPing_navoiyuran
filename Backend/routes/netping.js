@@ -1,0 +1,193 @@
+// routes/getNetPingData.js
+const express = require("express");
+const router = express.Router();
+const axios = require("axios");
+const Device = require("../models/netping"); // Qurilma modeli
+
+router.get("/list", async (req, res) => {
+  try {
+    const devices = await Device.find();
+    res.json(devices);
+  } catch (err) {
+    res.status(500).json({ error: "Server xatosi" });
+  }
+});
+// Qurilma qo‘shish
+router.post("/addNetPing", async (req, res) => {
+  try {
+    const device = new Device(req.body);
+    await device.save();
+
+    res.status(201).json({
+      message: "Qurilma muvaffaqiyatli qo‘shildi",
+      device,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: "Xatolik yuz berdi",
+      error: error.message,
+    });
+  }
+});
+
+// Temperature parse
+function parseTemperature(data) {
+  if (typeof data !== "string") return "Error";
+  const match = data.match(/thermo_result\('ok',\s*(\d+),\s*(\d+)\)/);
+  if (match) {
+    return `${match[1]}`;
+  }
+  return "Error";
+}
+
+// Humidity parse
+function parseHumidity(data) {
+  if (typeof data !== "string") return "Error";
+  const match = data.match(/relhum_result\('ok',\s*(\d+),\s*(\d+)\)/);
+  if (match) {
+    return `${match[1]}`;
+  }
+  return "Error";
+}
+// IO parse
+function parseIO(data) {
+  if (typeof data !== "string") return "Error";
+  const match = data.match(/io_result\('ok',\s*-?\d+,\s*(\d+),\s*\d+\)/);
+  if (match) {
+    return match[1]; // faqat uchinchi qiymat
+  }
+  return "Error";
+}
+
+// Qurilmalardan ma'lumot olish
+router.get("/data", async (req, res) => {
+  try {
+    const devices = await Device.find();
+    const results = [];
+
+    for (const dev of devices) {
+      const deviceData = {
+        name: dev.name,
+        ip: dev.ipAddress,
+        sensors: {
+          temperature: "Error",
+          humidity: "Error",
+          door: "Error",
+          movement: "Error",
+          fire: "Error",
+          alarm: "Error",
+        },
+      };
+
+      // Temperature
+      try {
+        const tempRes = await axios.get(
+          `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/thermo.cgi?t${dev.temperaturePort}`,
+          { timeout: 1000 }
+        );
+        deviceData.sensors.temperature = parseTemperature(tempRes.data);
+      } catch (e) {
+        deviceData.sensors.temperature = "Error";
+      }
+
+      // Humidity
+      try {
+        const humRes = await axios.get(
+          `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/relhum.cgi?h${dev.humidityPort}`,
+          { timeout: 1000 }
+        );
+        deviceData.sensors.humidity = parseHumidity(humRes.data);
+      } catch (e) {
+        deviceData.sensors.humidity = "Error";
+      }
+
+      // Door
+      try {
+        const doorRes = await axios.get(
+          `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/io.cgi?io${dev.doorIO}`,
+          { timeout: 1000 }
+        );
+        deviceData.sensors.door = parseIO(doorRes.data);
+      } catch (e) {
+        deviceData.sensors.door = "Error";
+      }
+
+      // Movement
+      try {
+        const movRes = await axios.get(
+          `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/io.cgi?io${dev.movementIO}`,
+          { timeout: 1000 }
+        );
+        deviceData.sensors.movement = parseIO(movRes.data);
+      } catch (e) {
+        deviceData.sensors.movement = "Error";
+      }
+      // Fire IO
+      try {
+        const fireRes = await axios.get(
+          `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/io.cgi?io${dev.fireIO}`,
+          { timeout: 1000 }
+        );
+        deviceData.sensors.fire = parseIO(fireRes.data);
+      } catch {
+        deviceData.sensors.fire = "Error";
+      }
+
+      // Alarm IO
+      try {
+        const alarmRes = await axios.get(
+          `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/io.cgi?io${dev.alarmIO}`,
+          { timeout: 1000 }
+        );
+        deviceData.sensors.alarm = parseIO(alarmRes.data);
+      } catch {
+        deviceData.sensors.alarm = "Error";
+      }
+
+      results.push(deviceData);
+    }
+
+    res.json(results);
+  } catch (error) {
+    console.error("NetPing ma'lumotlarini olishda xato:", error);
+    res.status(500).json({ error: "Server xatosi" });
+  }
+});
+// Signalizatsiyani o'chirish
+router.post("/alarm/off", async (req, res) => {
+  try {
+    let deviceIp = req.body.ip;
+    const device = await Device.findOne({ ipAddress: deviceIp });
+
+    await axios.get(
+      `http://${device.username}:${device.password}@${device.ipAddress}:${device.httpPort}/io.cgi?io4=1`
+    );
+    res.json({ success: true, message: "Signalizatsiya o‘chirildi" });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ success: false, message: "Xatolik", error: err.message });
+  }
+});
+
+// Signalizatsiyani yoqish
+router.post("/alarm/on", async (req, res) => {
+  try {
+    let deviceIp = req.body.ip;
+    const device = await Device.findOne({ ipAddress: deviceIp });
+    console.log(
+      `http://${device.username}:${device.password}@${device.ipAddress}:${device.httpPort}/io.cgi?io4=0`
+    );
+
+    await axios.get(
+      `http://${device.username}:${device.password}@${device.ipAddress}:${device.httpPort}/io.cgi?io4=0`
+    );
+    res.json({ success: true, message: "Signalizatsiya yoqildi" });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ success: false, message: "Xatolik", error: err.message });
+  }
+});
+
+module.exports = router;

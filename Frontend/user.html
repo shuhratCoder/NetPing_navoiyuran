@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Panel</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    body {
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        color: white;
+        min-height: 100vh;
+    }
+    .navbar {
+        background: rgba(0,0,0,0.4);
+        backdrop-filter: blur(6px);
+    }
+    .card {
+        background: rgba(255,255,255,0.05);
+        border: none;
+        border-radius: 15px;
+        backdrop-filter: blur(4px);
+        color: white;
+    }
+    .stat-card {
+        text-align: center;
+        padding: 15px;
+        border-radius: 15px;
+        background: rgba(255,255,255,0.08);
+    }
+    .stat-card h2 {
+        font-size: 2rem;
+        margin: 0;
+    }
+</style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark">
+    <div class="container-fluid">
+        <span class="navbar-brand fw-bold">📊 NetPing User Dashboard</span>
+        <span id="username">👤 User</span>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="row text-center mb-4" id="statCards">
+        <!-- Status cards JS orqali -->
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card p-3">
+                <h5>🌡 Harorat va 💧 Namlik grafigi</h5>
+                <canvas id="tempHumidityChart"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card p-3">
+                <h5>🚪 Eshik / 🏃 Harakat / 🔥 Olov holati</h5>
+                <canvas id="statusPie"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="user.js"></script>
+</body>
+</html>

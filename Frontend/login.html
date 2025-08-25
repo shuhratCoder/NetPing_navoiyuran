@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="uz">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Kirish</title>
+    <link rel="stylesheet" href="/login.css" />
+  </head>
+  <body>
+    <div class="login-container">
+      <div class="login-card">
+        <img
+          src="https://navoiyuran.uz/wp-content/uploads/2024/09/UZB.png"
+          alt="Navoiyuran Logo"
+          class="logo"
+        />
+        <h1>🔒 Tizimga kirish</h1>
+        <form id="loginForm">
+          <div class="input-group">
+            <label for="username">Foydalanuvchi nomi</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="Ismingiz"
+              required
+            />
+          </div>
+          <div class="input-group">
+            <label for="password">Parol</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Parolingiz"
+              required
+            />
+          </div>
+          <button type="submit" class="login-btn">Kirish</button>
+          <p id="errorMsg" class="error"></p>
+        </form>
+      </div>
+    </div>
+    <script src="/login.js"></script>
+  </body>
+</html>
