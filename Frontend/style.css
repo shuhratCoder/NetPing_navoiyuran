@@ -14,18 +14,18 @@ table {
 }
 
 .ac-btn {
-  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  background: linear-gradient(135deg, hsl(216, 98%, 51%), #080808);
   border: none;
   border-radius: 50%;
   padding: 10px 13px;
   color: white;
   font-size: 18px;
-  box-shadow: 0 4px 10px rgba(0, 114, 255, 0.3);
+  box-shadow: 0 4px 10px rgba(11, 11, 12, 0.3);
   transition: 0.3s ease;
 }
 
 .ac-btn:hover {
-  background: linear-gradient(135deg, #0072ff, #00c6ff);
+  background: linear-gradient(135deg, #1a1b1b, #19191a);
   transform: scale(1.1) rotate(10deg);
-  box-shadow: 0 6px 14px rgba(0, 114, 255, 0.5);
+  box-shadow: 0 6px 14px rgba(13, 13, 14, 0.5);
 }

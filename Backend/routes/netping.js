@@ -7,6 +7,7 @@ const Device = require("../models/netping"); // Qurilma modeli
 router.get("/list", async (req, res) => {
   try {
     const devices = await Device.find();
+    console.log("lssssssssssssss")
     res.json(devices);
   } catch (err) {
     res.status(500).json({ error: "Server xatosi" });
@@ -69,6 +70,7 @@ router.get("/data", async (req, res) => {
       const deviceData = {
         name: dev.name,
         ip: dev.ipAddress,
+        acIP: dev.acIP,
         sensors: {
           temperature: "Error",
           humidity: "Error",
@@ -175,14 +177,110 @@ router.post("/alarm/on", async (req, res) => {
   try {
     let deviceIp = req.body.ip;
     const device = await Device.findOne({ ipAddress: deviceIp });
-    console.log(
-      `http://${device.username}:${device.password}@${device.ipAddress}:${device.httpPort}/io.cgi?io4=0`
-    );
-
     await axios.get(
       `http://${device.username}:${device.password}@${device.ipAddress}:${device.httpPort}/io.cgi?io4=0`
     );
     res.json({ success: true, message: "Signalizatsiya yoqildi" });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ success: false, message: "Xatolik", error: err.message });
+  }
+});
+
+
+
+router.post("/pulut/off", async (req, res) => {
+  try {
+   const command = req.body.command;
+    const acIP = req.body.ip;
+    const device = await Device.findOne({ acIP: acIP });
+    await axios.get(
+      `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=5`
+    );
+    res.json({ success: true, message: `Pulut ${command} yuborildi` });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ success: false, message: "Xatolik", error: err.message });
+  }
+});
+
+router.post("/pulut/on", async (req, res) => {
+  try {
+   const command = req.body.command;
+    const acIP = req.body.ip;
+    const device = await Device.findOne({ acIP: acIP });
+    await axios.get(
+      `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=6`
+    );
+    res.json({ success: true, message: `Pulut ${command} yuborildi` });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ success: false, message: "Xatolik", error: err.message });
+  }
+});
+
+router.post("/pulut/17", async (req, res) => {
+  try {
+   const command = req.body.command;
+    const acIP = req.body.ip;
+    const device = await Device.findOne({ acIP: acIP });
+    await axios.get(
+      `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=4`
+    );
+    res.json({ success: true, message: `Pulut ${command} yuborildi` });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ success: false, message: "Xatolik", error: err.message });
+  }
+});
+
+
+router.post("/pulut/20", async (req, res) => {
+  try {
+   const command = req.body.command;
+    const acIP = req.body.ip;
+    const device = await Device.findOne({ acIP: acIP });
+    await axios.get(
+      `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=3`
+    );
+    res.json({ success: true, message: `Pulut ${command} yuborildi` });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ success: false, message: "Xatolik", error: err.message });
+  }
+});
+
+router.post("/pulut/22", async (req, res) => {
+  try {
+   const command = req.body.command;
+    const acIP = req.body.ip;
+    const device = await Device.findOne({ acIP: acIP });
+    await axios.get(
+      `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=1`
+    );
+    res.json({ success: true, message: `Pulut ${command} yuborildi` });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ success: false, message: "Xatolik", error: err.message });
+  }
+});
+
+
+router.post("/pulut/fan", async (req, res) => {
+  try {
+   const command = req.body.command;
+    const acIP = req.body.ip;
+    const device = await Device.findOne({ acIP: acIP });
+    await axios.get(
+      `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=2`
+    );
+    res.json({ success: true, message: `Pulut ${command} yuborildi` });
   } catch (err) {
     res
       .status(500)

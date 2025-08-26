@@ -21,6 +21,18 @@ const deviceSchema = new mongoose.Schema(
         message: "IP manzil noto‘g‘ri formatda",
       },
     },
+    acIP: {
+      type: String,
+      required: [true, "AC IP manzili majburiy"],
+      validate: {
+        validator: function (v) {
+          return /^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$/.test(
+            v
+          );
+        },
+        message: "AC IP manzil noto‘g‘ri formatda",
+      },
+    },
     httpPort: {
       type: Number,
       required: [true, "HTTP port majburiy"],

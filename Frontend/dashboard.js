@@ -65,12 +65,10 @@ function renderTable(devices) {
                     </div>
                 </td>
                 <td class="text-center">
-    <button class="ac-btn" onclick="openAcModal('${dev.ip}')">
-       <i class="bi bi-file-spreadsheet"></i>
-    </button>
+  <button class="ac-btn" onclick="openAcModal('${dev.acIP}')">
+     <i class="bi bi-file-spreadsheet"></i>
+  </button>
 </td>
-
-
             </tr>
         `;
   });
@@ -143,7 +141,9 @@ function openAcModal(ip) {
 // Pulutcha boshqaruv buyruqlari
 async function sendACCommand(cmd) {
   try {
-    const res = await fetch(`${API_BASE}/ac/control`, {
+    console.log(cmd);
+    
+    const res = await fetch(`${API_BASE}/pulut/${cmd}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ip: currentACIp, command: cmd }),
