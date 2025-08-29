@@ -40,4 +40,10 @@ router.post("/", async (req, res) => {
   });
 });
 
+// Backend/routes/auth.js yoki app.js ichida
+router.post("/logout", (req, res) => {
+  res.json({ message: "Logout muvaffaqiyatli bajarildi" });
+});
+
+
 module.exports = router;

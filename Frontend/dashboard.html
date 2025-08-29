@@ -1,9 +1,16 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NetPing Dashboard</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>Dashboard - NetPing Admin</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css"
+      rel="stylesheet"
+    />
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -12,276 +19,79 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
       rel="stylesheet"
     />
+    <link href="css/styles.css" rel="stylesheet" />
     <link href="./style.css" rel="stylesheet" />
+    <script
+      src="https://use.fontawesome.com/releases/v6.3.0/js/all.js"
+      crossorigin="anonymous"
+    ></script>
   </head>
-  <body class="bg-light">
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="#">NetPing Dashboard</a>
-        <div class="ms-auto">
-          <button
-            class="btn btn-success me-2"
-            data-bs-toggle="modal"
-            data-bs-target="#addDeviceModal"
-          >
-            <i class="bi bi-plus-circle"></i> Device add
-          </button>
-          <button
-            class="btn btn-primary"
-            data-bs-toggle="modal"
-            data-bs-target="#addUserModal"
-          >
-            <i class="bi bi-person-plus"></i> User add
-          </button>
-        </div>
+  <body class="sb-nav-fixed">
+    <!-- Top Navbar -->
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+      <a class="navbar-brand ps-3" href="dashboard.html">NetPing monitoring</a>
+      <button
+        class="btn btn-link btn-sm order-1 order-lg-0 ms-3"
+        id="sidebarToggle"
+      >
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="ms-auto me-3">
+        <button class="btn btn-outline-light" onclick="logout()">
+          🚪 Logout
+        </button>
       </div>
     </nav>
 
-    <div class="container-fluid mt-4">
-      <div class="card shadow">
-        <div class="card-header bg-dark text-white fw-bold">
-          Real-Time Sensor Ma'lumotlari
-        </div>
-        <div class="table-responsive">
-          <table
-            class="table table-bordered table-striped w-100"
-            id="sensorTable"
+    <!-- Layout -->
+    <div id="layoutSidenav">
+      <!-- Sidebar -->
+      <div id="layoutSidenav_nav">
+        <nav class="sb-sidenav accordion sb-sidenav-dark">
+          <div class="sb-sidenav-menu">
+            <div class="nav">
+              <div class="sb-sidenav-menu-heading">Core</div>
+              <a class="nav-link active" href="dashboard.html"
+                ><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a
+              >
+              <div class="sb-sidenav-menu-heading">Management</div>
+              <a class="nav-link" href="devices.html"
+                ><i class="fas fa-network-wired me-2"></i> Devices</a
+              >
+              <a class="nav-link" href="user.html"
+                ><i class="fas fa-users me-2"></i> Users</a
+              >
+            </div>
+          </div>
+          <div class="sb-sidenav-footer">Logged in as: NetPing Admin</div>
+        </nav>
+      </div>
+
+      <!-- Content -->
+      <div id="layoutSidenav_content">
+        <main>
+          <div class="container-fluid px-4">
+            <h1 class="mt-4">Dashboard</h1>
+            <ol class="breadcrumb mb-4">
+              <li class="breadcrumb-item active">Monitoring Overview</li>
+            </ol>
+            <div id="dashboardContent">
+              <!-- dashboard.js orqali grafik va statistikalar yuklanadi -->
+            </div>
+          </div>
+        </main>
+        <footer class="py-4 bg-light mt-auto">
+          <div
+            class="container-fluid px-4 d-flex justify-content-between small"
           >
-            <thead class="table-dark">
-              <tr>
-                <th>Device</th>
-                <th>IP</th>
-                <th>Temp (°C)</th>
-                <th>Humidity (%)</th>
-                <th>Door</th>
-                <th>Movement</th>
-                <th>Fire</th>
-                <th>Alarm</th>
-                <th>Pulut</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
+            <div class="text-muted">© shuhratCoder</div>
+          </div>
+        </footer>
       </div>
     </div>
 
-    <!-- Device qo‘shish Modal -->
-    <div
-      class="modal fade"
-      id="addDeviceModal"
-      tabindex="-1"
-      aria-labelledby="addDeviceLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog">
-        <form class="modal-content" id="addDeviceForm">
-          <div class="modal-header">
-            <h5 class="modal-title" id="addDeviceLabel">Device add</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <input
-              type="text"
-              class="form-control mb-2"
-              name="name"
-              placeholder="Device name"
-              required
-            />
-            <input
-              type="text"
-              class="form-control mb-2"
-              name="ipAddress"
-              placeholder="IP Address"
-              required
-            />
-            <input
-              type="text"
-              class="form-control mb-2"
-              name="acIP"
-              placeholder="AC IP Address"
-              required
-            />
-            <input
-              type="number"
-              class="form-control mb-2"
-              name="httpPort"
-              placeholder="HTTP Port"
-              value="80"
-              required
-            />
-            <input
-              type="text"
-              class="form-control mb-2"
-              name="username"
-              placeholder="Username"
-              required
-            />
-            <input
-              type="password"
-              class="form-control mb-2"
-              name="password"
-              placeholder="Password"
-              required
-            />
-            <input
-              type="number"
-              class="form-control mb-2"
-              name="temperaturePort"
-              placeholder="Temperature Port"
-              required
-            />
-            <input
-              type="number"
-              class="form-control mb-2"
-              name="humidityPort"
-              placeholder="Humidity Port"
-              required
-            />
-            <input
-              type="number"
-              class="form-control mb-2"
-              name="doorIO"
-              placeholder="Door IO"
-              required
-            />
-            <input
-              type="number"
-              class="form-control mb-2"
-              name="movementIO"
-              placeholder="Movement IO"
-              required
-            />
-            <input
-              type="number"
-              class="form-control mb-2"
-              name="fireIO"
-              placeholder="Fire IO"
-              required
-            />
-            <input
-              type="number"
-              class="form-control mb-2"
-              name="alarmIO"
-              placeholder="Alarm IO"
-              required
-            />
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-secondary" data-bs-dismiss="modal">
-              Bekor qilish
-            </button>
-            <button class="btn btn-success" type="submit">Saqlash</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- User qo‘shish Modal -->
-    <div
-      class="modal fade"
-      id="addUserModal"
-      tabindex="-1"
-      aria-labelledby="addUserLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog">
-        <form class="modal-content" id="addUserForm">
-          <div class="modal-header">
-            <h5 class="modal-title" id="addUserLabel">User add</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <input
-              type="text"
-              class="form-control mb-2"
-              name="username"
-              placeholder="Login"
-              required
-            />
-            <input
-              type="password"
-              class="form-control mb-2"
-              name="password"
-              placeholder="Parol"
-              required
-            />
-
-            <select class="form-control mb-2" name="role" required>
-              <option value="" disabled selected>Roli tanlang</option>
-              <option value="admin">Admin</option>
-              <option value="user">User</option>
-            </select>
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-secondary" data-bs-dismiss="modal">
-              Bekor qilish
-            </button>
-            <button class="btn btn-primary" type="submit">Saqlash</button>
-          </div>
-        </form>
-      </div>
-    </div>
-    <!-- Pulutcha boshqaruv modal -->
-    <div class="modal fade" id="acModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content rounded-3 shadow">
-          <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title">
-              <i class="fa-solid fa-fan"></i> Konditsioner boshqaruvi
-            </h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
-          </div>
-          <div class="modal-body text-center">
-            <button class="btn btn-danger m-2" onclick="sendACCommand('off')">
-              O‘chirish
-            </button>
-            <button class="btn btn-success m-2" onclick="sendACCommand('on')">
-              Yoqish
-            </button>
-            <button
-              class="btn btn-secondary m-2"
-              onclick="sendACCommand('fan')"
-            >
-              Ventilyator
-            </button>
-            <hr />
-            <button
-              class="btn btn-outline-primary m-2"
-              onclick="sendACCommand('17')"
-            >
-              17°C
-            </button>
-            <button
-              class="btn btn-outline-primary m-2"
-              onclick="sendACCommand('20')"
-            >
-              20°C
-            </button>
-            <button
-              class="btn btn-outline-primary m-2"
-              onclick="sendACCommand('22')"
-            >
-              22°C
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/scripts.js"></script>
     <script src="dashboard.js"></script>
   </body>
 </html>

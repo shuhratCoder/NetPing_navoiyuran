@@ -7,7 +7,6 @@ const Device = require("../models/netping"); // Qurilma modeli
 router.get("/list", async (req, res) => {
   try {
     const devices = await Device.find();
-    console.log("lssssssssssssss")
     res.json(devices);
   } catch (err) {
     res.status(500).json({ error: "Server xatosi" });

@@ -1,70 +1,191 @@
 <!DOCTYPE html>
-<html lang="uz">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>User Panel</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-    body {
-        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-        color: white;
-        min-height: 100vh;
-    }
-    .navbar {
-        background: rgba(0,0,0,0.4);
-        backdrop-filter: blur(6px);
-    }
-    .card {
-        background: rgba(255,255,255,0.05);
-        border: none;
-        border-radius: 15px;
-        backdrop-filter: blur(4px);
-        color: white;
-    }
-    .stat-card {
-        text-align: center;
-        padding: 15px;
-        border-radius: 15px;
-        background: rgba(255,255,255,0.08);
-    }
-    .stat-card h2 {
-        font-size: 2rem;
-        margin: 0;
-    }
-</style>
-</head>
-<body>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>Users - NetPing Admin</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link href="css/styles.css" rel="stylesheet" />
+    <link href="./style.css" rel="stylesheet" />
+    <script
+      src="https://use.fontawesome.com/releases/v6.3.0/js/all.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body class="sb-nav-fixed">
+    <!-- Top Navbar -->
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+      <a class="navbar-brand ps-3" href="dashboard.html">NetPing monitoring</a>
+      <button
+        class="btn btn-link btn-sm order-1 order-lg-0 ms-3"
+        id="sidebarToggle"
+      >
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="ms-auto me-3">
+        <button class="btn btn-outline-light" onclick="logout()">
+          🚪 Logout
+        </button>
+      </div>
+    </nav>
 
-<nav class="navbar navbar-dark">
-    <div class="container-fluid">
-        <span class="navbar-brand fw-bold">📊 NetPing User Dashboard</span>
-        <span id="username">👤 User</span>
-    </div>
-</nav>
-
-<div class="container mt-4">
-    <div class="row text-center mb-4" id="statCards">
-        <!-- Status cards JS orqali -->
-    </div>
-
-    <div class="row">
-        <div class="col-md-6 mb-4">
-            <div class="card p-3">
-                <h5>🌡 Harorat va 💧 Namlik grafigi</h5>
-                <canvas id="tempHumidityChart"></canvas>
+    <!-- Layout -->
+    <div id="layoutSidenav">
+      <!-- Sidebar -->
+      <div id="layoutSidenav_nav">
+        <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+          <div class="sb-sidenav-menu">
+            <div class="nav">
+              <div class="sb-sidenav-menu-heading">Core</div>
+              <a class="nav-link" href="dashboard.html">
+                <div class="sb-nav-link-icon">
+                  <i class="fas fa-tachometer-alt"></i>
+                </div>
+                Dashboard
+              </a>
+              <div class="sb-sidenav-menu-heading">Management</div>
+              <a class="nav-link" href="devices.html">
+                <div class="sb-nav-link-icon">
+                  <i class="fas fa-network-wired"></i>
+                </div>
+                Devices
+              </a>
+              <a class="nav-link active" href="user.html">
+                <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+                Users
+              </a>
             </div>
-        </div>
-        <div class="col-md-6 mb-4">
-            <div class="card p-3">
-                <h5>🚪 Eshik / 🏃 Harakat / 🔥 Olov holati</h5>
-                <canvas id="statusPie"></canvas>
-            </div>
-        </div>
-    </div>
-</div>
+          </div>
+          <div class="sb-sidenav-footer">
+            <div class="small">Logged in as:</div>
+            NetPing Admin
+          </div>
+        </nav>
+      </div>
 
-<script src="user.js"></script>
-</body>
+      <!-- Content -->
+      <div id="layoutSidenav_content">
+        <main>
+          <div class="container-fluid px-4">
+            <h1 class="mt-4">Users</h1>
+            <ol class="breadcrumb mb-4">
+              <li class="breadcrumb-item">
+                <a href="dashboard.html">Dashboard</a>
+              </li>
+              <li class="breadcrumb-item active">Users</li>
+            </ol>
+
+            <!-- Users Table -->
+            <div class="card mb-4">
+              <div
+                class="card-header d-flex justify-content-between align-items-center"
+              >
+                <span><i class="fas fa-users me-1"></i> Users List</span>
+                <button
+                  class="btn btn-primary btn-sm bg-dark"
+                  data-bs-toggle="modal"
+                  data-bs-target="#addUserModal"
+                >
+                  ➕ Add User
+                </button>
+              </div>
+              <div class="card-body">
+                <table
+                  class="table table-striped table-bordered"
+                  id="userTable"
+                >
+                  <thead class="table-dark">
+                    <tr>
+                      <th>Name</th>
+                      <th>Role</th>
+                      <th class="text-center">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="userTableBody">
+                    <!-- JS orqali userlar yuklanadi -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </main>
+        <footer class="py-4 bg-light mt-auto">
+          <div class="container-fluid px-4">
+            <div
+              class="d-flex align-items-center justify-content-between small"
+            >
+              <div class="text-muted">© shuhratCoder</div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div class="modal fade" id="addUserModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form id="addUserForm">
+            <div class="modal-header">
+              <h5 class="modal-title">Add User</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <input
+                type="text"
+                class="form-control mb-2"
+                name="username"
+                placeholder="Enter username"
+                required
+              />
+              <input
+                type="password"
+                class="form-control mb-2"
+                name="password"
+                placeholder="Enter password"
+                required
+              />
+              <select class="form-select" name="role" required>
+                <option value="admin">Admin</option>
+                <option value="user">User</option>
+              </select>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" data-bs-dismiss="modal">
+                Cancel
+              </button>
+              <button class="btn btn-success" type="submit">Add</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="js/scripts.js"></script>
+    <script src="dashboard.js"></script>
+  </body>
 </html>

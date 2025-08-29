@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>Devices - NetPing Admin</title>
+
+    <!-- Styles -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link href="css/styles.css" rel="stylesheet" />
+    <link href="./style.css" rel="stylesheet" />
+
+    <!-- Font Awesome (dashboard.js dagi fa-* ikonlar uchun) -->
+    <script
+      src="https://use.fontawesome.com/releases/v6.3.0/js/all.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body class="sb-nav-fixed">
+    <!-- Top Navbar -->
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+      <a class="navbar-brand ps-3" href="dashboard.html">NetPing monitoring</a>
+
+      <!-- Sidebar Toggle -->
+      <button
+        class="btn btn-link btn-sm order-1 order-lg-0 ms-3"
+        id="sidebarToggle"
+      >
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <!-- Right side -->
+      <div class="ms-auto me-3">
+        <button class="btn btn-outline-light" onclick="logout()">🚪 Logout</button>
+      </div>
+    </nav>
+
+    <!-- Layout -->
+    <div id="layoutSidenav">
+      <!-- Sidebar -->
+      <div id="layoutSidenav_nav">
+        <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+          <div class="sb-sidenav-menu">
+            <div class="nav">
+              <div class="sb-sidenav-menu-heading">Core</div>
+              <a class="nav-link" href="dashboard.html">
+                <div class="sb-nav-link-icon">
+                  <i class="fas fa-tachometer-alt"></i>
+                </div>
+                Dashboard
+              </a>
+
+              <div class="sb-sidenav-menu-heading">Management</div>
+              <a class="nav-link active" href="devices.html">
+                <div class="sb-nav-link-icon">
+                  <i class="fas fa-network-wired"></i>
+                </div>
+                Devices
+              </a>
+              <a class="nav-link" href="user.html">
+                <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+                Users
+              </a>
+            </div>
+          </div>
+          <div class="sb-sidenav-footer">
+            <div class="small">Logged in as:</div>
+            NetPing Admin
+          </div>
+        </nav>
+      </div>
+
+      <!-- Content -->
+      <div id="layoutSidenav_content">
+        <main>
+          <div class="container-fluid px-4">
+            <div class="d-flex align-items-center justify-content-between">
+              <h1 class="mt-4">Devices</h1>
+              <button
+                class="btn btn-dark mt-4"
+                data-bs-toggle="modal"
+                data-bs-target="#addDeviceModal"
+              >
+                <i class="bi bi-plus-circle"></i> Add Device
+              </button>
+            </div>
+
+            <ol class="breadcrumb mb-4">
+              <li class="breadcrumb-item">
+                <a href="dashboard.html">Dashboard</a>
+              </li>
+              <li class="breadcrumb-item active">Devices</li>
+            </ol>
+
+            <!-- Devices Table (ID: sensorTable — dashboard.js shuni qidiradi) -->
+            <div class="card mb-4">
+              <div class="card-header bg-dark text-white fw-bold">
+                Real-Time Sensor Ma'lumotlari
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table
+                    class="table table-striped table-bordered w-100"
+                    id="sensorTable"
+                  >
+                    <thead class="table-dark">
+                      <tr>
+                        <th>Device</th>
+                        <th>IP</th>
+                        <th>Temp (°C)</th>
+                        <th>Humidity (%)</th>
+                        <th>Door</th>
+                        <th>Movement</th>
+                        <th>Fire</th>
+                        <th>Alarm</th>
+                        <th>Pulut</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <!-- dashboard.js -> renderTable() to‘ldiradi -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        <footer class="py-4 bg-light mt-auto">
+          <div class="container-fluid px-4">
+            <div class="d-flex align-items-center justify-content-between small">
+              <div class="text-muted">© shuhratCoder</div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <!-- Device qo‘shish Modal (ID: addDeviceModal, form: addDeviceForm) -->
+    <div class="modal fade" id="addDeviceModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <form class="modal-content" id="addDeviceForm">
+          <div class="modal-header">
+            <h5 class="modal-title">Add Device</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="text" class="form-control mb-2" name="name" placeholder="Device name" required />
+            <input type="text" class="form-control mb-2" name="ipAddress" placeholder="IP Address" required />
+            <input type="text" class="form-control mb-2" name="acIP" placeholder="AC IP Address" required />
+            <input type="number" class="form-control mb-2" name="httpPort" placeholder="HTTP Port" value="80" required />
+            <input type="text" class="form-control mb-2" name="username" placeholder="Username" required />
+            <input type="password" class="form-control mb-2" name="password" placeholder="Password" required />
+            <input type="number" class="form-control mb-2" name="temperaturePort" placeholder="Temperature Port" required />
+            <input type="number" class="form-control mb-2" name="humidityPort" placeholder="Humidity Port" required />
+            <input type="number" class="form-control mb-2" name="doorIO" placeholder="Door IO" required />
+            <input type="number" class="form-control mb-2" name="movementIO" placeholder="Movement IO" required />
+            <input type="number" class="form-control mb-2" name="fireIO" placeholder="Fire IO" required />
+            <input type="number" class="form-control mb-2" name="alarmIO" placeholder="Alarm IO" required />
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button class="btn btn-success" type="submit">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- AC (Pulut) boshqaruv Modal (ID: acModal) -->
+    <div class="modal fade" id="acModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-3 shadow">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title">
+              <i class="bi bi-fan"></i> Konditsioner boshqaruvi
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body text-center">
+            <button class="btn btn-danger m-2" onclick="sendACCommand('off')">O‘chirish</button>
+            <button class="btn btn-success m-2" onclick="sendACCommand('on')">Yoqish</button>
+            <button class="btn btn-secondary m-2" onclick="sendACCommand('fan')">Ventilyator</button>
+            <hr />
+            <button class="btn btn-outline-primary m-2" onclick="sendACCommand('17')">17°C</button>
+            <button class="btn btn-outline-primary m-2" onclick="sendACCommand('20')">20°C</button>
+            <button class="btn btn-outline-primary m-2" onclick="sendACCommand('22')">22°C</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="js/scripts.js"></script>
+    <script src="dashboard.js"></script>
+  </body>
+</html>
