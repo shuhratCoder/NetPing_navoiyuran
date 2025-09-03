@@ -12,5 +12,20 @@
   "scripts": {
     "start": "node Backend/app.js",
     "dev": "nodemon Backend/app.js"
-  }
+  },
+  "name": "netping_navoiyuran",
+  "description": "",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shuhratCoder/NetPing_navoiyuran.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shuhratCoder/NetPing_navoiyuran/issues"
+  },
+  "homepage": "https://github.com/shuhratCoder/NetPing_navoiyuran#readme"
 }
