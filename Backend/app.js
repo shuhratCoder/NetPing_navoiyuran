@@ -18,11 +18,11 @@ connectDB();
 app.use(express.static(path.join(__dirname, "../Frontend")));
 
 // Routerlar
-app.use("/netping", authRoutes);
+app.use("/", authRoutes);
 app.use("/netping", netPing);
 app.use("/netping", user);
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () =>
+app.listen(PORT, '0.0.0.0',() =>
   console.log(`Server http://localhost:${PORT} da ishga tushdi`)
 );

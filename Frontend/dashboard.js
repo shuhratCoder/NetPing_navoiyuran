@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:3001/netping";
+const API_BASE = "http://172.19.2.91:3001/netping";
 let currentACIp = null;
 const isUsersPage   = !!document.querySelector("#userTable");
 const isDevicesPage = !!document.querySelector("#sensorTable");
