@@ -43,6 +43,73 @@ async function setAlarm(ip, action) {
   }
 }
 
+function renderDeviceCards(devices) {
+  const container = document.querySelector("#deviceCards");
+  if (!container) return;
+
+  container.innerHTML = devices
+    .map(
+      (dev) => `
+    <div class="col-md-4">
+  <div class="device-card">
+    <h5>${dev.name}</h5>
+    <small class="text-muted">${dev.ip}</small>
+    <hr>
+
+    <div class="sensor-item">
+      <div class="sensor-label">
+        <i class="bi bi-thermometer-half text-success"></i> Temp
+      </div>
+      <div class="sensor-value">
+        ${dev.sensors.temperature ? dev.sensors.temperature + " °C" : "-"}
+      </div>
+    </div>
+
+    <div class="sensor-item">
+      <div class="sensor-label">
+        <i class="bi bi-droplet text-info"></i> Humidity
+      </div>
+      <div class="sensor-value">
+        ${dev.sensors.humidity ? dev.sensors.humidity + " %" : "-"}
+      </div>
+    </div>
+
+    <div class="sensor-item">
+      <div class="sensor-label">
+        <i class="bi bi-door-closed text-primary"></i> Door
+      </div>
+      <div class="sensor-value">${doorBadge(dev.sensors.door)}</div>
+    </div>
+
+    <div class="sensor-item">
+      <div class="sensor-label">
+        <i class="bi bi-person-walking text-warning"></i> Movement
+      </div>
+      <div class="sensor-value">${movementBadge(dev.sensors.movement)}</div>
+    </div>
+
+    <div class="sensor-item">
+      <div class="sensor-label">
+        <i class="bi bi-fire text-danger"></i> Fire
+      </div>
+      <div class="sensor-value">${fireBadge(dev.sensors.fire)}</div>
+    </div>
+
+    <div class="sensor-item">
+      <div class="sensor-label">
+        <i class="bi bi-bell text-danger"></i> Alarm
+      </div>
+      <div class="sensor-value">${alarmBadge(dev.sensors.alarm)}</div>
+    </div>
+  </div>
+</div>
+
+  `
+    )
+    .join("");
+}
+
+
 // ------------ DEVICES (faqat devices.html da) ------------
 function renderTable(devices) {
   const tbody = document.querySelector("#sensorTable tbody");
