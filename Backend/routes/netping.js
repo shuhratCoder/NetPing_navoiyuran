@@ -7,6 +7,7 @@ const Device = require("../models/netping"); // Qurilma modeli
 router.get("/list", async (req, res) => {
   try {
     const devices = await Device.find();
+    console.log(devices);
     res.json(devices);
   } catch (err) {
     res.status(500).json({ error: "Server xatosi" });
@@ -86,6 +87,7 @@ router.get("/data", async (req, res) => {
           `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/thermo.cgi?t${dev.temperaturePort}`,
           { timeout: 1000 }
         );
+
         deviceData.sensors.temperature = parseTemperature(tempRes.data);
       } catch (e) {
         deviceData.sensors.temperature = "Error";
@@ -187,11 +189,9 @@ router.post("/alarm/on", async (req, res) => {
   }
 });
 
-
-
 router.post("/pulut/off", async (req, res) => {
   try {
-   const command = req.body.command;
+    const command = req.body.command;
     const acIP = req.body.ip;
     const device = await Device.findOne({ acIP: acIP });
     await axios.get(
@@ -207,7 +207,7 @@ router.post("/pulut/off", async (req, res) => {
 
 router.post("/pulut/on", async (req, res) => {
   try {
-   const command = req.body.command;
+    const command = req.body.command;
     const acIP = req.body.ip;
     const device = await Device.findOne({ acIP: acIP });
     await axios.get(
@@ -223,7 +223,7 @@ router.post("/pulut/on", async (req, res) => {
 
 router.post("/pulut/17", async (req, res) => {
   try {
-   const command = req.body.command;
+    const command = req.body.command;
     const acIP = req.body.ip;
     const device = await Device.findOne({ acIP: acIP });
     await axios.get(
@@ -237,10 +237,9 @@ router.post("/pulut/17", async (req, res) => {
   }
 });
 
-
 router.post("/pulut/20", async (req, res) => {
   try {
-   const command = req.body.command;
+    const command = req.body.command;
     const acIP = req.body.ip;
     const device = await Device.findOne({ acIP: acIP });
     await axios.get(
@@ -256,7 +255,7 @@ router.post("/pulut/20", async (req, res) => {
 
 router.post("/pulut/22", async (req, res) => {
   try {
-   const command = req.body.command;
+    const command = req.body.command;
     const acIP = req.body.ip;
     const device = await Device.findOne({ acIP: acIP });
     await axios.get(
@@ -270,10 +269,9 @@ router.post("/pulut/22", async (req, res) => {
   }
 });
 
-
 router.post("/pulut/fan", async (req, res) => {
   try {
-   const command = req.body.command;
+    const command = req.body.command;
     const acIP = req.body.ip;
     const device = await Device.findOne({ acIP: acIP });
     await axios.get(
