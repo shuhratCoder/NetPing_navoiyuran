@@ -85,11 +85,12 @@ router.get("/data", async (req, res) => {
       try {
         const tempRes = await axios.get(
           `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/thermo.cgi?t${dev.temperaturePort}`,
-          { timeout: 1000 }
+          { timeout: 3000 }
         );
 
         deviceData.sensors.temperature = parseTemperature(tempRes.data);
       } catch (e) {
+        console.error("temp", e.message);
         deviceData.sensors.temperature = "Error";
       }
 
@@ -97,10 +98,11 @@ router.get("/data", async (req, res) => {
       try {
         const humRes = await axios.get(
           `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/relhum.cgi?h${dev.humidityPort}`,
-          { timeout: 1000 }
+          { timeout: 3000 }
         );
         deviceData.sensors.humidity = parseHumidity(humRes.data);
       } catch (e) {
+        console.error("humidity", e.message);
         deviceData.sensors.humidity = "Error";
       }
 
@@ -108,10 +110,11 @@ router.get("/data", async (req, res) => {
       try {
         const doorRes = await axios.get(
           `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/io.cgi?io${dev.doorIO}`,
-          { timeout: 1000 }
+          { timeout: 3000 }
         );
         deviceData.sensors.door = parseIO(doorRes.data);
       } catch (e) {
+        console.error("door", e.message);
         deviceData.sensors.door = "Error";
       }
 
@@ -119,20 +122,22 @@ router.get("/data", async (req, res) => {
       try {
         const movRes = await axios.get(
           `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/io.cgi?io${dev.movementIO}`,
-          { timeout: 1000 }
+          { timeout: 3000 }
         );
         deviceData.sensors.movement = parseIO(movRes.data);
       } catch (e) {
+        console.error("movement", e.message);
         deviceData.sensors.movement = "Error";
       }
       // Fire IO
       try {
         const fireRes = await axios.get(
           `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/io.cgi?io${dev.fireIO}`,
-          { timeout: 1000 }
+          { timeout: 3000 }
         );
         deviceData.sensors.fire = parseIO(fireRes.data);
-      } catch {
+      } catch (e) {
+        console.error("fire", e.message);
         deviceData.sensors.fire = "Error";
       }
 
@@ -140,10 +145,11 @@ router.get("/data", async (req, res) => {
       try {
         const alarmRes = await axios.get(
           `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/io.cgi?io${dev.alarmIO}`,
-          { timeout: 1000 }
+          { timeout: 3000 }
         );
         deviceData.sensors.alarm = parseIO(alarmRes.data);
-      } catch {
+      } catch (e) {
+        console.error("alarm", e.message);
         deviceData.sensors.alarm = "Error";
       }
 
