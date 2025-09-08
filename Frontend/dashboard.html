@@ -20,7 +20,48 @@
       rel="stylesheet"
     />
     <link href="css/styles.css" rel="stylesheet" />
-    <link href="./style.css" rel="stylesheet" />
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
+      .device-card {
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        padding: 16px;
+        margin-bottom: 20px;
+        background: #fff;
+      }
+      .device-card h5 {
+        font-weight: 600;
+      }
+      .sensor-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 4px 0;
+        font-size: 14px;
+      }
+
+      .sensor-item i {
+        margin-right: 8px;
+      }
+
+      .sensor-label {
+        display: flex;
+        align-items: center;
+      }
+
+      .sensor-value {
+        min-width: 60px; /* hamma qiymatlar tekis joylashishi uchun */
+        text-align: right;
+        font-weight: 600;
+      }
+
+      .sensor-item span {
+        margin-left: 4px;
+        font-weight: 600;
+      }
+    </style>
     <script
       src="https://use.fontawesome.com/releases/v6.3.0/js/all.js"
       crossorigin="anonymous"
@@ -76,7 +117,9 @@
               <li class="breadcrumb-item active">Monitoring Overview</li>
             </ol>
             <div id="dashboardContent">
-              <!-- dashboard.js orqali grafik va statistikalar yuklanadi -->
+              <!-- Devices -->
+              <h4 class="mb-3">Devices</h4>
+              <div class="row" id="deviceCards"></div>
             </div>
           </div>
         </main>

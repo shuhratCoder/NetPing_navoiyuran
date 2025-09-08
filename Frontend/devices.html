@@ -42,7 +42,9 @@
 
       <!-- Right side -->
       <div class="ms-auto me-3">
-        <button class="btn btn-outline-light" onclick="logout()">🚪 Logout</button>
+        <button class="btn btn-outline-light" onclick="logout()">
+          🚪 Logout
+        </button>
       </div>
     </nav>
 
@@ -139,7 +141,9 @@
 
         <footer class="py-4 bg-light mt-auto">
           <div class="container-fluid px-4">
-            <div class="d-flex align-items-center justify-content-between small">
+            <div
+              class="d-flex align-items-center justify-content-between small"
+            >
               <div class="text-muted">© shuhratCoder</div>
             </div>
           </div>
@@ -148,29 +152,113 @@
     </div>
 
     <!-- Device qo‘shish Modal (ID: addDeviceModal, form: addDeviceForm) -->
-    <div class="modal fade" id="addDeviceModal" tabindex="-1" aria-hidden="true">
+    <div
+      class="modal fade"
+      id="addDeviceModal"
+      tabindex="-1"
+      aria-hidden="true"
+    >
       <div class="modal-dialog">
         <form class="modal-content" id="addDeviceForm">
           <div class="modal-header">
             <h5 class="modal-title">Add Device</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
           </div>
           <div class="modal-body">
-            <input type="text" class="form-control mb-2" name="name" placeholder="Device name" required />
-            <input type="text" class="form-control mb-2" name="ipAddress" placeholder="IP Address" required />
-            <input type="text" class="form-control mb-2" name="acIP" placeholder="AC IP Address" required />
-            <input type="number" class="form-control mb-2" name="httpPort" placeholder="HTTP Port" value="80" required />
-            <input type="text" class="form-control mb-2" name="username" placeholder="Username" required />
-            <input type="password" class="form-control mb-2" name="password" placeholder="Password" required />
-            <input type="number" class="form-control mb-2" name="temperaturePort" placeholder="Temperature Port" required />
-            <input type="number" class="form-control mb-2" name="humidityPort" placeholder="Humidity Port" required />
-            <input type="number" class="form-control mb-2" name="doorIO" placeholder="Door IO" required />
-            <input type="number" class="form-control mb-2" name="movementIO" placeholder="Movement IO" required />
-            <input type="number" class="form-control mb-2" name="fireIO" placeholder="Fire IO" required />
-            <input type="number" class="form-control mb-2" name="alarmIO" placeholder="Alarm IO" required />
+            <input
+              type="text"
+              class="form-control mb-2"
+              name="name"
+              placeholder="Device name"
+              required
+            />
+            <input
+              type="text"
+              class="form-control mb-2"
+              name="ipAddress"
+              placeholder="IP Address"
+              required
+            />
+            <input
+              type="text"
+              class="form-control mb-2"
+              name="acIP"
+              placeholder="AC IP Address"
+              required
+            />
+            <input
+              type="number"
+              class="form-control mb-2"
+              name="httpPort"
+              placeholder="HTTP Port"
+              value="80"
+              required
+            />
+            <input
+              type="text"
+              class="form-control mb-2"
+              name="username"
+              placeholder="Username"
+              required
+            />
+            <input
+              type="password"
+              class="form-control mb-2"
+              name="password"
+              placeholder="Password"
+              required
+            />
+            <input
+              type="number"
+              class="form-control mb-2"
+              name="temperaturePort"
+              placeholder="Temperature Port"
+              required
+            />
+            <input
+              type="number"
+              class="form-control mb-2"
+              name="humidityPort"
+              placeholder="Humidity Port"
+              required
+            />
+            <input
+              type="number"
+              class="form-control mb-2"
+              name="doorIO"
+              placeholder="Door IO"
+              required
+            />
+            <input
+              type="number"
+              class="form-control mb-2"
+              name="movementIO"
+              placeholder="Movement IO"
+              required
+            />
+            <input
+              type="number"
+              class="form-control mb-2"
+              name="fireIO"
+              placeholder="Fire IO"
+              required
+            />
+            <input
+              type="number"
+              class="form-control mb-2"
+              name="alarmIO"
+              placeholder="Alarm IO"
+              required
+            />
           </div>
           <div class="modal-footer">
-            <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button class="btn btn-secondary" data-bs-dismiss="modal">
+              Cancel
+            </button>
             <button class="btn btn-success" type="submit">Save</button>
           </div>
         </form>
@@ -185,16 +273,44 @@
             <h5 class="modal-title">
               <i class="bi bi-fan"></i> Konditsioner boshqaruvi
             </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
           </div>
           <div class="modal-body text-center">
-            <button class="btn btn-danger m-2" onclick="sendACCommand('off')">O‘chirish</button>
-            <button class="btn btn-success m-2" onclick="sendACCommand('on')">Yoqish</button>
-            <button class="btn btn-secondary m-2" onclick="sendACCommand('fan')">Ventilyator</button>
+            <button class="btn btn-danger m-2" onclick="sendACCommand('off')">
+              O‘chirish
+            </button>
+            <button class="btn btn-success m-2" onclick="sendACCommand('on')">
+              Yoqish
+            </button>
+            <button
+              class="btn btn-secondary m-2"
+              onclick="sendACCommand('fan')"
+            >
+              Ventilyator
+            </button>
             <hr />
-            <button class="btn btn-outline-primary m-2" onclick="sendACCommand('17')">17°C</button>
-            <button class="btn btn-outline-primary m-2" onclick="sendACCommand('20')">20°C</button>
-            <button class="btn btn-outline-primary m-2" onclick="sendACCommand('22')">22°C</button>
+            <button
+              class="btn btn-outline-primary m-2"
+              onclick="sendACCommand('17')"
+            >
+              17°C
+            </button>
+            <button
+              class="btn btn-outline-primary m-2"
+              onclick="sendACCommand('20')"
+            >
+              20°C
+            </button>
+            <button
+              class="btn btn-outline-primary m-2"
+              onclick="sendACCommand('22')"
+            >
+              22°C
+            </button>
           </div>
         </div>
       </div>

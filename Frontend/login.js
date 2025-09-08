@@ -1,4 +1,4 @@
-const API_LOGIN = "http://172.19.2.91:3001"; // backend login endpoint
+const API_LOGIN = "http://localhost:3001"; // backend login endpoint
 
 const loginForm = document.getElementById("loginForm");
 const errorMsg = document.getElementById("errorMsg");
