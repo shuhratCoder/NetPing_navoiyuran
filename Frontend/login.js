@@ -3,6 +3,22 @@ const API_LOGIN = "http://192.168.11.11:3001"; // backend login endpoint
 const loginForm = document.getElementById("loginForm");
 const errorMsg = document.getElementById("errorMsg");
 
+const token = localStorage.getItem("token");
+if (token) {
+  fetch("/", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ username: "name", password: "password" }),
+  })
+    .then((res) => res.json())
+    .then((data) => console.log(data))
+    .catch((err) => console.error("Error:", err));
+  window.location.href = "/"; // Agar token mavjud bo'lsa, asosiy sahifaga yo'naltirish
+}
+
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   errorMsg.textContent = "";

@@ -1,8 +1,10 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const sessiion = require("express-session");
 const User = require("../models/user");
 const path = require("path");
+const authenticateToken = require("../middleware/token");
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -39,11 +41,5 @@ router.post("/", async (req, res) => {
     role: user.role,
   });
 });
-
-// Backend/routes/auth.js yoki app.js ichida
-router.post("/logout", (req, res) => {
-  res.json({ message: "Logout muvaffaqiyatli bajarildi" });
-});
-
 
 module.exports = router;

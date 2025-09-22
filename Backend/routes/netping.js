@@ -3,8 +3,9 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 const Device = require("../models/netping"); // Qurilma modeli
+const authenticateToken = require("../middleware/token");
 
-router.get("/list", async (req, res) => {
+router.get("/list", authenticateToken, async (req, res) => {
   try {
     const devices = await Device.find();
     console.log(devices);
@@ -14,7 +15,7 @@ router.get("/list", async (req, res) => {
   }
 });
 // Qurilma qo‘shish
-router.post("/addNetPing", async (req, res) => {
+router.post("/addNetPing", authenticateToken, async (req, res) => {
   try {
     const device = new Device(req.body);
     await device.save();
@@ -61,7 +62,7 @@ function parseIO(data) {
 }
 
 // Qurilmalardan ma'lumot olish
-router.get("/data", async (req, res) => {
+router.get("/data", authenticateToken, async (req, res) => {
   try {
     const devices = await Device.find();
     const results = [];
@@ -163,7 +164,7 @@ router.get("/data", async (req, res) => {
   }
 });
 // Signalizatsiyani o'chirish
-router.post("/alarm/off", async (req, res) => {
+router.post("/alarm/off", authenticateToken, async (req, res) => {
   try {
     let deviceIp = req.body.ip;
     const device = await Device.findOne({ ipAddress: deviceIp });
@@ -180,7 +181,7 @@ router.post("/alarm/off", async (req, res) => {
 });
 
 // Signalizatsiyani yoqish
-router.post("/alarm/on", async (req, res) => {
+router.post("/alarm/on", authenticateToken, async (req, res) => {
   try {
     let deviceIp = req.body.ip;
     const device = await Device.findOne({ ipAddress: deviceIp });
@@ -195,7 +196,7 @@ router.post("/alarm/on", async (req, res) => {
   }
 });
 
-router.post("/pulut/off", async (req, res) => {
+router.post("/pulut/off", authenticateToken, async (req, res) => {
   try {
     const command = req.body.command;
     const acIP = req.body.ip;
@@ -211,7 +212,7 @@ router.post("/pulut/off", async (req, res) => {
   }
 });
 
-router.post("/pulut/on", async (req, res) => {
+router.post("/pulut/on", authenticateToken, async (req, res) => {
   try {
     const command = req.body.command;
     const acIP = req.body.ip;
@@ -227,7 +228,7 @@ router.post("/pulut/on", async (req, res) => {
   }
 });
 
-router.post("/pulut/17", async (req, res) => {
+router.post("/pulut/17", authenticateToken, async (req, res) => {
   try {
     const command = req.body.command;
     const acIP = req.body.ip;
@@ -243,7 +244,7 @@ router.post("/pulut/17", async (req, res) => {
   }
 });
 
-router.post("/pulut/20", async (req, res) => {
+router.post("/pulut/20", authenticateToken, async (req, res) => {
   try {
     const command = req.body.command;
     const acIP = req.body.ip;
@@ -259,7 +260,7 @@ router.post("/pulut/20", async (req, res) => {
   }
 });
 
-router.post("/pulut/22", async (req, res) => {
+router.post("/pulut/22", authenticateToken, async (req, res) => {
   try {
     const command = req.body.command;
     const acIP = req.body.ip;
@@ -275,7 +276,7 @@ router.post("/pulut/22", async (req, res) => {
   }
 });
 
-router.post("/pulut/fan", async (req, res) => {
+router.post("/pulut/fan", authenticateToken, async (req, res) => {
   try {
     const command = req.body.command;
     const acIP = req.body.ip;

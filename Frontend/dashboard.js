@@ -109,7 +109,6 @@ function renderDeviceCards(devices) {
     .join("");
 }
 
-
 // ------------ DEVICES (faqat devices.html da) ------------
 function renderTable(devices) {
   const tbody = document.querySelector("#sensorTable tbody");
