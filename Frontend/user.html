@@ -28,6 +28,16 @@
     ></script>
   </head>
   <body class="sb-nav-fixed">
+    <script>
+    const token = localStorage.getItem("token");
+     const role = localStorage.getItem("role");
+    if (!token) {
+      window.location.href = "/login.html";
+    }
+    if (role !== "admin") {
+    window.location.href = "/dashboard.html"; // user bo‘lsa qaytariladi
+  }
+  </script>
     <!-- Top Navbar -->
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
       <a class="navbar-brand ps-3" href="dashboard.html">NetPing monitoring</a>

@@ -2,9 +2,9 @@ const express = require("express");
 const router = express.Router();
 const User=require("../models/user")
 const bcrypt = require("bcryptjs");
+const authenticateToken = require("../middleware/token");
 
-
-router.get("/users", async (req, res) => {
+router.get("/users",authenticateToken, async (req, res) => {
   try {
     const users = await User.find();
     res.json(users);
@@ -15,7 +15,7 @@ router.get("/users", async (req, res) => {
 });
 
 
-router.post("/addUser", async (req, res) => {
+router.post("/addUser",authenticateToken, async (req, res) => {
   try {
     const { username, password, role } = req.body;
 
@@ -45,7 +45,7 @@ router.post("/addUser", async (req, res) => {
   }
 });
 
-router.delete("/deleteUser", async (req, res) => {
+router.delete("/deleteUser",authenticateToken, async (req, res) => {
   const { username } = req.body;
   try {
     await User.deleteOne({ username });

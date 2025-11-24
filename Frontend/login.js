@@ -1,22 +1,12 @@
-const API_LOGIN = "http://192.168.11.11:3001"; // backend login endpoint
+const API_LOGIN = "http://localhost:3001";  // /login emas!
 
 const loginForm = document.getElementById("loginForm");
 const errorMsg = document.getElementById("errorMsg");
 
+// Agar token mavjud bo‘lsa -> dashboardga o'tkazish
 const token = localStorage.getItem("token");
 if (token) {
-  fetch("/", {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ username: "name", password: "password" }),
-  })
-    .then((res) => res.json())
-    .then((data) => console.log(data))
-    .catch((err) => console.error("Error:", err));
-  window.location.href = "/"; // Agar token mavjud bo'lsa, asosiy sahifaga yo'naltirish
+  window.location.href = "/dashboard.html";
 }
 
 loginForm.addEventListener("submit", async (e) => {
@@ -38,22 +28,18 @@ loginForm.addEventListener("submit", async (e) => {
       body: JSON.stringify({ username, password }),
     });
 
-    if (!res.ok) {
-      const errData = await res.json();
-      throw new Error(errData.message || "Login xatosi");
-    }
-
     const data = await res.json();
-    // Token va role'ni localStorage ga saqlash
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("role", data.role);
 
-    // Rolga qarab yo'naltirish
-    if (data.role === "admin") {
-      window.location.href = "/dashboard.html";
-    } else {
-      window.location.href = "/user.html";
+    if (!res.ok) {
+      throw new Error(data.message || "Login xatosi!");
     }
+
+    // Saqlash
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("role", data.user.role);
+
+    window.location.href = "/dashboard.html";
+
   } catch (err) {
     errorMsg.textContent = err.message;
   }
