@@ -22,21 +22,21 @@ const deviceSchema = new mongoose.Schema(
     },
     acIP: {
       type: String,
-      required: [true, "AC IP manzili majburiy"],
-      validate: {
-        validator: function (v) {
-          return /^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$/.test(
-            v
-          );
-        },
-        message: "AC IP manzil noto‘g‘ri formatda",
-      },
+      //required: [true, "AC IP manzili majburiy"],
+      // validate: {
+      //   validator: function (v) {
+      //     return /^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$/.test(
+      //       v
+      //     );
+      //   },
+      //   message: "AC IP manzil noto‘g‘ri formatda",
+      // },
     },
     httpPort: {
       type: Number,
-      required: [true, "HTTP port majburiy"],
-      min: [1, "Port 1 dan kichik bo‘lishi mumkin emas"],
-      max: [65535, "Port 65535 dan katta bo‘lishi mumkin emas"],
+      //required: [true, "HTTP port majburiy"],
+      // min: [1, "Port 1 dan kichik bo‘lishi mumkin emas"],
+      // max: [65535, "Port 65535 dan katta bo‘lishi mumkin emas"],
     },
     username: {
       type: String,
@@ -53,11 +53,11 @@ const deviceSchema = new mongoose.Schema(
     },
     humidityPort: {
       type: String,
-      required: [true, "Namlik porti majburiy"],
+      //required: [true, "Namlik porti majburiy"],
     },
     alarmIO: {
       type: String,
-      required: [true, "Signalizatsiya IO majburiy"],
+      //required: [true, "Signalizatsiya IO majburiy"],
     },
     doorIO: {
       type: String,
@@ -65,11 +65,11 @@ const deviceSchema = new mongoose.Schema(
     },
     fireIO: {
       type: String,
-      required: [true, "Olov IO majburiy"],
+      //required: [true, "Olov IO majburiy"],
     },
     movementIO: {
       type: String,
-      required: [true, "Harakat IO majburiy"],
+      //required: [true, "Harakat IO majburiy"],
     },
   },
   { timestamps: true }
