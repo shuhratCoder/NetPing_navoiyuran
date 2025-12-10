@@ -1,4 +1,4 @@
-const API_LOGIN = "http://192.16.11.11:3001"; // /login emas!
+const API_LOGIN = "http://192.168.11.11:3001"; // /login emas!
 const loginForm = document.getElementById("loginForm");
 const errorMsg = document.getElementById("errorMsg");
 
