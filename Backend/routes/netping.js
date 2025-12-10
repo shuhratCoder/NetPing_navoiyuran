@@ -9,29 +9,33 @@ const role = require("../middleware/role");
 router.get("/list", authenticateToken, async (req, res) => {
   try {
     const devices = await Device.find();
-    console.log(devices);
     res.json(devices);
   } catch (err) {
     res.status(500).json({ error: "Server xatosi" });
   }
 });
 // Qurilma qo‘shish
-router.post("/addNetPing", authenticateToken,role(["admin"]), async (req, res) => {
-  try {
-    const device = new Device(req.body);
-    await device.save();
+router.post(
+  "/addNetPing",
+  authenticateToken,
+  role(["admin"]),
+  async (req, res) => {
+    try {
+      const device = new Device(req.body);
+      await device.save();
 
-    res.status(201).json({
-      message: "Qurilma muvaffaqiyatli qo‘shildi",
-      device,
-    });
-  } catch (error) {
-    res.status(400).json({
-      message: "Xatolik yuz berdi",
-      error: error.message,
-    });
+      res.status(201).json({
+        message: "Qurilma muvaffaqiyatli qo‘shildi",
+        device,
+      });
+    } catch (error) {
+      res.status(400).json({
+        message: "Xatolik yuz berdi",
+        error: error.message,
+      });
+    }
   }
-});
+);
 
 // Temperature parse
 function parseTemperature(data) {
@@ -63,7 +67,7 @@ function parseIO(data) {
 }
 
 // Qurilmalardan ma'lumot olish
-router.get("/data", authenticateToken,role(["admin"]), async (req, res) => {
+router.get("/data", authenticateToken, role(["admin"]), async (req, res) => {
   try {
     const devices = await Device.find();
     const results = [];
@@ -165,132 +169,172 @@ router.get("/data", authenticateToken,role(["admin"]), async (req, res) => {
   }
 });
 // Signalizatsiyani o'chirish
-router.post("/alarm/off", authenticateToken,role(["admin"]), async (req, res) => {
-  try {
-    let deviceIp = req.body.ip;
-    const device = await Device.findOne({ ipAddress: deviceIp });
+router.post(
+  "/alarm/off",
+  authenticateToken,
+  role(["admin"]),
+  async (req, res) => {
+    try {
+      let deviceIp = req.body.ip;
+      const device = await Device.findOne({ ipAddress: deviceIp });
 
-    await axios.get(
-      `http://${device.username}:${device.password}@${device.ipAddress}:${device.httpPort}/io.cgi?io4=1`
-    );
-    res.json({ success: true, message: "Signalizatsiya o‘chirildi" });
-  } catch (err) {
-    res
-      .status(500)
-      .json({ success: false, message: "Xatolik", error: err.message });
+      await axios.get(
+        `http://${device.username}:${device.password}@${device.ipAddress}:${device.httpPort}/io.cgi?io4=1`
+      );
+      res.json({ success: true, message: "Signalizatsiya o‘chirildi" });
+    } catch (err) {
+      res
+        .status(500)
+        .json({ success: false, message: "Xatolik", error: err.message });
+    }
   }
-});
+);
 
 // Signalizatsiyani yoqish
-router.post("/alarm/on", authenticateToken,role(["admin"]), async (req, res) => {
-  try {
-    let deviceIp = req.body.ip;
-    const device = await Device.findOne({ ipAddress: deviceIp });
-    await axios.get(
-      `http://${device.username}:${device.password}@${device.ipAddress}:${device.httpPort}/io.cgi?io4=0`
-    );
-    res.json({ success: true, message: "Signalizatsiya yoqildi" });
-  } catch (err) {
-    res
-      .status(500)
-      .json({ success: false, message: "Xatolik", error: err.message });
+router.post(
+  "/alarm/on",
+  authenticateToken,
+  role(["admin"]),
+  async (req, res) => {
+    try {
+      let deviceIp = req.body.ip;
+      const device = await Device.findOne({ ipAddress: deviceIp });
+      await axios.get(
+        `http://${device.username}:${device.password}@${device.ipAddress}:${device.httpPort}/io.cgi?io4=0`
+      );
+      res.json({ success: true, message: "Signalizatsiya yoqildi" });
+    } catch (err) {
+      res
+        .status(500)
+        .json({ success: false, message: "Xatolik", error: err.message });
+    }
   }
-});
+);
 
-router.post("/pulut/off", authenticateToken,role(["admin"]), async (req, res) => {
-  try {
-    const command = req.body.command;
-    const acIP = req.body.ip;
-    const device = await Device.findOne({ acIP: acIP });
-    await axios.get(
-      `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=5`
-    );
-    res.json({ success: true, message: `Pulut ${command} yuborildi` });
-  } catch (err) {
-    res
-      .status(500)
-      .json({ success: false, message: "Xatolik", error: err.message });
+router.post(
+  "/pulut/off",
+  authenticateToken,
+  role(["admin"]),
+  async (req, res) => {
+    try {
+      const command = req.body.command;
+      const acIP = req.body.ip;
+      const device = await Device.findOne({ acIP: acIP });
+      await axios.get(
+        `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=5`
+      );
+      res.json({ success: true, message: `Pulut ${command} yuborildi` });
+    } catch (err) {
+      res
+        .status(500)
+        .json({ success: false, message: "Xatolik", error: err.message });
+    }
   }
-});
+);
 
-router.post("/pulut/on", authenticateToken,role(["admin"]), async (req, res) => {
-  try {
-    const command = req.body.command;
-    const acIP = req.body.ip;
-    const device = await Device.findOne({ acIP: acIP });
-    await axios.get(
-      `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=6`
-    );
-    res.json({ success: true, message: `Pulut ${command} yuborildi` });
-  } catch (err) {
-    res
-      .status(500)
-      .json({ success: false, message: "Xatolik", error: err.message });
+router.post(
+  "/pulut/on",
+  authenticateToken,
+  role(["admin"]),
+  async (req, res) => {
+    try {
+      const command = req.body.command;
+      const acIP = req.body.ip;
+      const device = await Device.findOne({ acIP: acIP });
+      await axios.get(
+        `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=6`
+      );
+      res.json({ success: true, message: `Pulut ${command} yuborildi` });
+    } catch (err) {
+      res
+        .status(500)
+        .json({ success: false, message: "Xatolik", error: err.message });
+    }
   }
-});
+);
 
-router.post("/pulut/17", authenticateToken,role(["admin"]), async (req, res) => {
-  try {
-    const command = req.body.command;
-    const acIP = req.body.ip;
-    const device = await Device.findOne({ acIP: acIP });
-    await axios.get(
-      `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=4`
-    );
-    res.json({ success: true, message: `Pulut ${command} yuborildi` });
-  } catch (err) {
-    res
-      .status(500)
-      .json({ success: false, message: "Xatolik", error: err.message });
+router.post(
+  "/pulut/17",
+  authenticateToken,
+  role(["admin"]),
+  async (req, res) => {
+    try {
+      const command = req.body.command;
+      const acIP = req.body.ip;
+      const device = await Device.findOne({ acIP: acIP });
+      await axios.get(
+        `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=4`
+      );
+      res.json({ success: true, message: `Pulut ${command} yuborildi` });
+    } catch (err) {
+      res
+        .status(500)
+        .json({ success: false, message: "Xatolik", error: err.message });
+    }
   }
-});
+);
 
-router.post("/pulut/20", authenticateToken,role(["admin"]), async (req, res) => {
-  try {
-    const command = req.body.command;
-    const acIP = req.body.ip;
-    const device = await Device.findOne({ acIP: acIP });
-    await axios.get(
-      `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=3`
-    );
-    res.json({ success: true, message: `Pulut ${command} yuborildi` });
-  } catch (err) {
-    res
-      .status(500)
-      .json({ success: false, message: "Xatolik", error: err.message });
+router.post(
+  "/pulut/20",
+  authenticateToken,
+  role(["admin"]),
+  async (req, res) => {
+    try {
+      const command = req.body.command;
+      const acIP = req.body.ip;
+      const device = await Device.findOne({ acIP: acIP });
+      await axios.get(
+        `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=3`
+      );
+      res.json({ success: true, message: `Pulut ${command} yuborildi` });
+    } catch (err) {
+      res
+        .status(500)
+        .json({ success: false, message: "Xatolik", error: err.message });
+    }
   }
-});
+);
 
-router.post("/pulut/22", authenticateToken,role(["admin"]), async (req, res) => {
-  try {
-    const command = req.body.command;
-    const acIP = req.body.ip;
-    const device = await Device.findOne({ acIP: acIP });
-    await axios.get(
-      `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=1`
-    );
-    res.json({ success: true, message: `Pulut ${command} yuborildi` });
-  } catch (err) {
-    res
-      .status(500)
-      .json({ success: false, message: "Xatolik", error: err.message });
+router.post(
+  "/pulut/22",
+  authenticateToken,
+  role(["admin"]),
+  async (req, res) => {
+    try {
+      const command = req.body.command;
+      const acIP = req.body.ip;
+      const device = await Device.findOne({ acIP: acIP });
+      await axios.get(
+        `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=1`
+      );
+      res.json({ success: true, message: `Pulut ${command} yuborildi` });
+    } catch (err) {
+      res
+        .status(500)
+        .json({ success: false, message: "Xatolik", error: err.message });
+    }
   }
-});
+);
 
-router.post("/pulut/fan", authenticateToken,role(["admin"]), async (req, res) => {
-  try {
-    const command = req.body.command;
-    const acIP = req.body.ip;
-    const device = await Device.findOne({ acIP: acIP });
-    await axios.get(
-      `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=2`
-    );
-    res.json({ success: true, message: `Pulut ${command} yuborildi` });
-  } catch (err) {
-    res
-      .status(500)
-      .json({ success: false, message: "Xatolik", error: err.message });
+router.post(
+  "/pulut/fan",
+  authenticateToken,
+  role(["admin"]),
+  async (req, res) => {
+    try {
+      const command = req.body.command;
+      const acIP = req.body.ip;
+      const device = await Device.findOne({ acIP: acIP });
+      await axios.get(
+        `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=2`
+      );
+      res.json({ success: true, message: `Pulut ${command} yuborildi` });
+    } catch (err) {
+      res
+        .status(500)
+        .json({ success: false, message: "Xatolik", error: err.message });
+    }
   }
-});
+);
 
 module.exports = router;

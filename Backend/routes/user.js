@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const User=require("../models/user")
+const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const authenticateToken = require("../middleware/token");
 
-router.get("/users",authenticateToken, async (req, res) => {
+router.get("/users", authenticateToken, async (req, res) => {
   try {
     const users = await User.find();
     res.json(users);
@@ -14,13 +14,14 @@ router.get("/users",authenticateToken, async (req, res) => {
   }
 });
 
-
-router.post("/addUser",authenticateToken, async (req, res) => {
+router.post("/addUser", authenticateToken, async (req, res) => {
   try {
     const { username, password, role } = req.body;
 
     if (!username || !password || !role) {
-      return res.status(400).json({ message: "Barcha maydonlarni to‘ldiring!" });
+      return res
+        .status(400)
+        .json({ message: "Barcha maydonlarni to‘ldiring!" });
     }
 
     // Username takrorlanmasligi
@@ -38,14 +39,16 @@ router.post("/addUser",authenticateToken, async (req, res) => {
     });
 
     await newUser.save();
-    res.status(201).json({ message: "Foydalanuvchi muvaffaqiyatli qo‘shildi." });
+    res
+      .status(201)
+      .json({ message: "Foydalanuvchi muvaffaqiyatli qo‘shildi." });
   } catch (error) {
     console.error("Foydalanuvchini qo‘shishda xato:", error);
     res.status(500).json({ message: "Server xatosi" });
   }
 });
 
-router.delete("/deleteUser",authenticateToken, async (req, res) => {
+router.delete("/deleteUser", authenticateToken, async (req, res) => {
   const { username } = req.body;
   try {
     await User.deleteOne({ username });

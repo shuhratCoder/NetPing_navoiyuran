@@ -1,4 +1,4 @@
-const API_LOGIN = "http://192.168.11.11:3001";  // /login emas!
+const API_LOGIN = "http://localhost:3001"; // /login emas!
 const loginForm = document.getElementById("loginForm");
 const errorMsg = document.getElementById("errorMsg");
 
@@ -38,7 +38,6 @@ loginForm.addEventListener("submit", async (e) => {
     localStorage.setItem("role", data.user.role);
 
     window.location.href = "/dashboard.html";
-
   } catch (err) {
     errorMsg.textContent = err.message;
   }

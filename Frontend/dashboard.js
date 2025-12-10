@@ -1,7 +1,5 @@
-const API_BASE = "http://192.168.11.11:3001/netping";
+const API_BASE = "http://localhost:3001/netping";
 // Frontend/js/dashboard.js
-
-
 
 let currentACIp = null;
 const isUsersPage = !!document.querySelector("#userTable");
@@ -57,21 +55,37 @@ function doorBadge(val) {
 }
 
 function movementBadge(val) {
-  return val === "1"
-    ? `<span class="badge bg-success"><i class="fa-solid fa-person-walking"></i> Harakat bor</span>`
-    : `<span class="badge bg-success"><i class="fa-solid fa-person-walking"></i> Harakat yo‘q</span>`;
+  if (val === "0" || val === "1") {
+    return val === "1"
+      ? `<span class="badge bg-danger"><i class="fa-solid fa-person-walking"></i> Harakat bor</span>`
+      : `<span class="badge bg-success"><i class="fa-solid fa-person-walking"></i> Harakat yo'q</span>`;
+  }
+  return `<span class="badge bg-secondary"><i class="fa-solid fa-person-walking"></i> Datchik yo'q</span>`;
 }
 
 function fireBadge(val) {
-  return val === "0"
-    ? `<span class="badge bg-danger"><i class="fa-solid fa-fire"></i> Yong‘in bor</span>`
-    : `<span class="badge bg-success"><i class="fa-solid fa-fire"></i> Yong‘in yo‘q</span>`;
+  if (val === "0" || val === "1") {
+    return val === "0"
+      ? `<span class="badge bg-danger"><i class="fa-solid fa-fire"></i> Yong‘in bor</span>`
+      : `<span class="badge bg-success"><i class="fa-solid fa-fire"></i> Yong‘in yo‘q</span>`;
+  }
+  return `<span class="badge bg-secondary"><i class="fa-solid fa-fire"></i> Datchik yo'q</span>`;
 }
 
 function alarmBadge(val) {
-  return val === "1"
-    ? `<span class="badge bg-success"><i class="fa-solid fa-bell-slash"></i> Signal yo‘q</span>`
-    : `<span class="badge bg-danger"><i class="fa-solid fa-bell"></i> Signal ochiq</span>`;
+  if (val === "0" || val === "1") {
+    return val === "1"
+      ? `<span class="badge bg-success"><i class="fa-solid fa-bell-slash"></i> Signal yo‘q</span>`
+      : `<span class="badge bg-danger"><i class="fa-solid fa-bell"></i> Signal ochiq</span>`;
+  }
+  return `<span class="badge bg-secondary"><i class="fa-solid fa-bell"></i> Datchik yo'q</span>`;
+}
+
+function humidityBadge(val) {
+  if (val === "Error") {
+    return `<span class="badge bg-secondary"> Datchik yo'q</span>`;
+  }
+  return val + " %";
 }
 
 // ----------- SIGNAL (ALARM) -----------
@@ -124,7 +138,7 @@ function renderDeviceCards(devices) {
             <i class="bi bi-droplet text-info"></i> Humidity
           </div>
           <div class="sensor-value">
-            ${dev.sensors.humidity ? dev.sensors.humidity + " %" : "-"}
+            ${humidityBadge(dev.sensors.humidity)}
           </div>
         </div>
 
@@ -173,7 +187,7 @@ function renderTable(devices) {
         <td>${dev.name}</td>
         <td>${dev.ip}</td>
         <td>${dev.sensors.temperature}</td>
-        <td>${dev.sensors.humidity}</td>
+        <td>${humidityBadge(dev.sensors.humidity)}</td>
         <td>${doorBadge(dev.sensors.door)}</td>
         <td>${movementBadge(dev.sensors.movement)}</td>
         <td>${fireBadge(dev.sensors.fire)}</td>
@@ -271,8 +285,12 @@ if (addDeviceForm) {
       loadData();
       loadDevices();
       (
-        bootstrap.Modal.getInstance(document.getElementById("addDeviceModal")) ||
-        bootstrap.Modal.getOrCreateInstance(document.getElementById("addDeviceModal"))
+        bootstrap.Modal.getInstance(
+          document.getElementById("addDeviceModal")
+        ) ||
+        bootstrap.Modal.getOrCreateInstance(
+          document.getElementById("addDeviceModal")
+        )
       ).hide();
       e.target.reset();
     } catch (err) {
@@ -336,7 +354,9 @@ if (addUserForm) {
       e.target.reset();
       (
         bootstrap.Modal.getInstance(document.getElementById("addUserModal")) ||
-        bootstrap.Modal.getOrCreateInstance(document.getElementById("addUserModal"))
+        bootstrap.Modal.getOrCreateInstance(
+          document.getElementById("addUserModal")
+        )
       ).hide();
     } catch (err) {
       alert("Xatolik: " + err.message);
