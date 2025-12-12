@@ -1,4 +1,4 @@
-const API_BASE = "http://192.168.11.11:3001/netping";
+const API_BASE = "http://localhost:3001/netping";
 // Frontend/js/dashboard.js
 
 let currentACIp = null;
@@ -232,7 +232,80 @@ async function sendACCommand(cmd) {
   }
 }
 window.sendACCommand = sendACCommand;
+// 🔔 DASHBOARD TOAST (yuqoridan chiqadi)
+function showDoorToast(deviceName) {
+  const toast = document.getElementById("doorToast");
+  if (!toast) return;
 
+  toast.innerHTML = `🚪 <strong>${deviceName}</strong> xonasida eshik ochildi`;
+  toast.classList.remove("d-none");
+
+  // 3 sekunddan keyin yopiladi
+  setTimeout(() => {
+    toast.classList.add("d-none");
+  }, 3000);
+}
+
+// 🔐 Eshikning oldingi holatlari
+let lastDoorState = {};
+let doorCooldown = {};
+
+// 🚨 Eshik ochilganda signal chalinishi
+function checkDoorAlert(devices) {
+  const audio = document.getElementById("doorAlertSound");
+  if (!audio) return;
+
+  devices.forEach((dev) => {
+    
+    const devId = dev.ip; // device identifikatori sifatida IP
+    const current = Number(dev.sensors.door); // 0 yoki 1
+    const previous = lastDoorState[devId];
+
+    // birinchi kelganda faqat state saqlanadi
+    if (previous === undefined) {
+      lastDoorState[devId] = current;
+      return;
+    }
+
+    // faqat 0 → 1 ga o'tishda signal chalsin
+    if (previous === 0 && current === 1) {
+      // Cooldown bo‘lsa chalmaydi
+      if (doorCooldown[devId]) return;
+
+      // 🔊 Ovoz chalish
+      audio.currentTime = 0;
+      audio.play().catch(() => {});
+      // 🔊 2 soniya o‘tgach ovozni to‘xtatish
+      setTimeout(() => {
+        audio.pause();
+        audio.currentTime = 0;
+      }, 2000); // 2000ms = 2 sekund
+
+      // 🔔 DESKTOP NOTIFICATION
+      console.log(dev);
+      showDoorToast(dev.name);
+
+        // 🧾 BACKENDGA LOG YUBORISH
+        fetch(`${API_BASE}/log`, {
+          method: "POST",
+          headers: buildHeaders({ "Content-Type": "application/json" }),
+          body: JSON.stringify({
+            device: dev.name,
+            type: "door",
+            value: "open"
+          })
+        });
+      // 3 sekund bloklash
+      doorCooldown[devId] = true;
+      setTimeout(() => {
+        doorCooldown[devId] = false;
+      }, 3000);
+    }
+
+    // oxirgi holatni saqlaymiz
+    lastDoorState[devId] = current;
+  });
+}
 // ----------- LOAD FUNKSIYALAR -----------
 
 async function loadDevices() {
@@ -244,6 +317,8 @@ async function loadDevices() {
 
     const devices = await res.json();
     renderDeviceCards(devices);
+    // 🚨 SIGNAL TEKSHIRISH
+    checkDoorAlert(devices);
   } catch (err) {
     console.error("Devices olishda xatolik:", err);
   }

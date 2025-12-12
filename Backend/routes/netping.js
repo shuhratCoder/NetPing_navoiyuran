@@ -5,6 +5,7 @@ const axios = require("axios");
 const Device = require("../models/netping"); // Qurilma modeli
 const authenticateToken = require("../middleware/token");
 const role = require("../middleware/role");
+const Log=require("../models/log")
 
 router.get("/list", authenticateToken, async (req, res) => {
   try {
@@ -336,5 +337,14 @@ router.post(
     }
   }
 );
+router.post("/log", authenticateToken, async (req, res) => {
+  try {
+    const log = new Log(req.body);
+    await log.save();
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ error: "Log saqlashda xato" });
+  }
+});
 
 module.exports = router;
