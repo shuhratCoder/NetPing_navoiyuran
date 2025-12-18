@@ -176,7 +176,6 @@ function renderDeviceCards(devices) {
 }
 
 // ----------- DEVICES TABLE -----------
-
 function renderTable(devices) {
   const tbody = document.querySelector("#sensorTable tbody");
   if (!tbody) return;
@@ -205,9 +204,24 @@ function renderTable(devices) {
             <i class="bi bi-file-spreadsheet"></i>
           </button>
         </td>
+        <td class="text-center">
+          <button
+            class="btn btn-sm btn-outline-primary"
+            onclick="openHistoryPage('${dev.id}')">
+            detail
+          </button>
+        </td>
       </tr>`;
   });
 }
+
+function openHistoryPage(deviceId) {
+  // query string orqali yuboramiz
+  window.location.href =
+    `history.html?deviceId=${deviceId}`;
+}
+
+window.openHistoryPage = openHistoryPage;
 
 function openAcModal(ip) {
   currentACIp = ip;
@@ -256,7 +270,6 @@ function checkDoorAlert(devices) {
   if (!audio) return;
 
   devices.forEach((dev) => {
-    
     const devId = dev.ip; // device identifikatori sifatida IP
     const current = Number(dev.sensors.door); // 0 yoki 1
     const previous = lastDoorState[devId];
@@ -282,19 +295,7 @@ function checkDoorAlert(devices) {
       }, 2000); // 2000ms = 2 sekund
 
       // 🔔 DESKTOP NOTIFICATION
-      console.log(dev);
       showDoorToast(dev.name);
-
-        // 🧾 BACKENDGA LOG YUBORISH
-        fetch(`${API_BASE}/log`, {
-          method: "POST",
-          headers: buildHeaders({ "Content-Type": "application/json" }),
-          body: JSON.stringify({
-            device: dev.name,
-            type: "door",
-            value: "open"
-          })
-        });
       // 3 sekund bloklash
       doorCooldown[devId] = true;
       setTimeout(() => {

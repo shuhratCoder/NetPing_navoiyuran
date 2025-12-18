@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>History - NetPing</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link href="css/styles.css" rel="stylesheet" />
+
+    <style>
+      body {
+        background: #0f172a;
+      }
+      .page-wrap {
+        padding: 18px;
+      }
+      .glass {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        color: #e5e7eb;
+      }
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: end;
+        justify-content: space-between;
+        padding: 14px 14px 0 14px;
+      }
+      .toolbar h4 {
+        margin: 0;
+        font-weight: 700;
+      }
+      .chart-card {
+        padding: 14px;
+      }
+      .chart-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 8px 0;
+        font-weight: 700;
+      }
+      .hint {
+        opacity: 0.75;
+        font-size: 0.9rem;
+      }
+      input,
+      .btn {
+        border-radius: 12px !important;
+      }
+      canvas {
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 14px;
+        padding: 8px;
+      }
+      .chart-wrap {
+        position: relative;
+        width: 100%;
+      }
+
+      .temp-wrap {
+        height: 320px; /* 🌡 temperature uchun ideal */
+      }
+
+      .door-wrap {
+        height: 180px; /* 🚪 door uchun kichikroq */
+      }
+
+      .chart-wrap canvas {
+        width: 100% !important;
+        height: 100% !important;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="page-wrap container-fluid">
+      <div class="glass">
+        <div class="toolbar">
+          <div>
+            <h4 id="pageTitle">📊 Device History</h4>
+            <div class="hint">
+              Temperature (-10..40) va Door (Open/Closed)
+            </div>
+          </div>
+
+          <div class="d-flex flex-wrap gap-2">
+            <div>
+              <label class="form-label mb-1">From</label>
+              <input
+                id="fromInput"
+                class="form-control"
+                type="datetime-local"
+              />
+            </div>
+            <div>
+              <label class="form-label mb-1">To</label>
+              <input id="toInput" class="form-control" type="datetime-local" />
+            </div>
+
+            <div class="d-flex gap-2 align-items-end">
+              <button class="btn btn-outline-light" onclick="setQuickRange(1)">
+                1h
+              </button>
+              <button class="btn btn-outline-light" onclick="setQuickRange(6)">
+                6h
+              </button>
+              <button class="btn btn-outline-light" onclick="setQuickRange(24)">
+                24h
+              </button>
+              <button class="btn btn-light" onclick="setQuickRange(48)">
+                48h
+              </button>
+              <button class="btn btn-primary" onclick="loadHistory()">
+                Apply
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3 p-3">
+          <div class="col-12">
+            <div class="glass chart-card">
+              <div class="chart-title">🌡 Temperature</div>
+              <div class="chart-wrap temp-wrap">
+                <canvas id="tempChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="glass chart-card">
+              <div class="chart-title">🚪 Door status</div>
+              <div class="chart-wrap door-wrap">
+                <canvas id="doorChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ChartJS + Time scale + Zoom -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+    <script src="history.js"></script>
+    <script src="dashboard.js"></script>
+  </body>
+</html>

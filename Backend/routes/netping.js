@@ -6,6 +6,7 @@ const Device = require("../models/netping"); // Qurilma modeli
 const authenticateToken = require("../middleware/token");
 const role = require("../middleware/role");
 const Log=require("../models/log");
+const mongoose = require("mongoose");
 
 router.get("/list", authenticateToken, async (req, res) => {
   try {
@@ -75,6 +76,7 @@ router.get("/data", authenticateToken, role(["admin"]), async (req, res) => {
 
     for (const dev of devices) {
       const deviceData = {
+        id:dev._id,
         name: dev.name,
         ip: dev.ipAddress,
         acIP: dev.acIP,
@@ -337,13 +339,67 @@ router.post(
     }
   }
 );
-router.post("/log", authenticateToken, async (req, res) => {
+
+async function saveLog() {
+ try {
+    const devices = await Device.find();
+    for (const dev of devices) {
+    const tempRes = await axios.get(
+          `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/thermo.cgi?t${dev.temperaturePort}`,
+          { timeout: 3000 }
+        );
+     const doorRes = await axios.get(
+          `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/io.cgi?io${dev.doorIO}`,
+          { timeout: 3000 }
+        );
+       const temp = Number(parseTemperature(tempRes.data));
+      const door = Number(parseIO(doorRes.data));
+          const log = new Log({
+        deviceId: dev._id, // MUHIM
+        temp,
+        door,
+      });
+          await log.save()
+      }
+      
+  } catch (err) {
+   console.error(err.message)
+  }
+}
+setInterval(saveLog, 5*60*100);
+
+
+router.get("/history/:id", authenticateToken, async (req, res) => {
   try {
-    const log = new Log(req.body);
-    await log.save();
-    res.json({ success: true });
+    const { id } = req.params;
+    const { from, to } = req.query;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid deviceId" });
+    }
+
+    const logs = await Log.find({
+      deviceId: id,
+      createdAt: {
+        $gte: new Date(Number(from)),
+        $lte: new Date(Number(to))
+      }
+    }).sort({ createdAt: 1 });
+
+    const temperature = logs.map(l => ({
+      time: l.createdAt,
+      value: l.temp
+    }));
+
+    const door = logs.map(l => ({
+      time: l.createdAt,
+      value: l.door
+    }));
+
+    res.json({ temperature, door });
   } catch (e) {
-    res.status(500).json({ error: "Log saqlashda xato" });
+    console.error(e);
+    res.status(500).json({ message: "Server xatosi" });
   }
 });
 
