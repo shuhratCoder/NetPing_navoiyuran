@@ -5,7 +5,7 @@ const axios = require("axios");
 const Device = require("../models/netping"); // Qurilma modeli
 const authenticateToken = require("../middleware/token");
 const role = require("../middleware/role");
-const Log=require("../models/log")
+const Log=require("../models/log");
 
 router.get("/list", authenticateToken, async (req, res) => {
   try {
