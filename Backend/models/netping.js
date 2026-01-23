@@ -71,6 +71,7 @@ const deviceSchema = new mongoose.Schema(
       type: String,
       //required: [true, "Harakat IO majburiy"],
     },
+    regionID: { type: mongoose.Schema.Types.ObjectId, required: true },
   },
   { timestamps: true }
 );

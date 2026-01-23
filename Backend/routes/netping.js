@@ -5,7 +5,8 @@ const axios = require("axios");
 const Device = require("../models/netping"); // Qurilma modeli
 const authenticateToken = require("../middleware/token");
 const role = require("../middleware/role");
-const Log=require("../models/log");
+const Log = require("../models/log");
+const Region = require("../models/region");
 const mongoose = require("mongoose");
 
 router.get("/list", authenticateToken, async (req, res) => {
@@ -70,13 +71,20 @@ function parseIO(data) {
 
 // Qurilmalardan ma'lumot olish
 router.get("/data", authenticateToken, role(["admin"]), async (req, res) => {
+   const { region } = req.query;
+  let filter = {};
+  if (region) {
+    filter.regionID = region;
+  }
   try {
-    const devices = await Device.find();
+    const devices = await Device.find(filter);
     const results = [];
 
     for (const dev of devices) {
+      const region = await Region.findById(dev.regionID);
       const deviceData = {
         id:dev._id,
+        region: region.region,
         name: dev.name,
         ip: dev.ipAddress,
         acIP: dev.acIP,
@@ -341,33 +349,31 @@ router.post(
 );
 
 async function saveLog() {
- try {
+  try {
     const devices = await Device.find();
     for (const dev of devices) {
-    const tempRes = await axios.get(
-          `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/thermo.cgi?t${dev.temperaturePort}`,
-          { timeout: 3000 }
-        );
-     const doorRes = await axios.get(
-          `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/io.cgi?io${dev.doorIO}`,
-          { timeout: 3000 }
-        );
-       const temp = Number(parseTemperature(tempRes.data));
+      const tempRes = await axios.get(
+        `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/thermo.cgi?t${dev.temperaturePort}`,
+        { timeout: 3000 }
+      );
+      const doorRes = await axios.get(
+        `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/io.cgi?io${dev.doorIO}`,
+        { timeout: 3000 }
+      );
+      const temp = Number(parseTemperature(tempRes.data));
       const door = Number(parseIO(doorRes.data));
-          const log = new Log({
+      const log = new Log({
         deviceId: dev._id, // MUHIM
         temp,
         door,
       });
-          await log.save()
-      }
-      
+      await log.save();
+    }
   } catch (err) {
-   console.error(err.message)
+    console.error(err.message);
   }
 }
-setInterval(saveLog, 5*60*100);
-
+setInterval(saveLog, 5 * 60 * 100);
 
 router.get("/history/:id", authenticateToken, async (req, res) => {
   try {
@@ -386,12 +392,12 @@ router.get("/history/:id", authenticateToken, async (req, res) => {
       }
     }).sort({ createdAt: 1 });
 
-    const temperature = logs.map(l => ({
+    const temperature = logs.map((l) => ({
       time: l.createdAt,
       value: l.temp
     }));
 
-    const door = logs.map(l => ({
+    const door = logs.map((l) => ({
       time: l.createdAt,
       value: l.door
     }));
@@ -400,6 +406,14 @@ router.get("/history/:id", authenticateToken, async (req, res) => {
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "Server xatosi" });
+  }
+});
+router.get("/regionList", async (req, res) => {
+  try {
+    const regions = await Region.find();
+    res.json(regions);
+  } catch (error) {
+    console.log(error);
   }
 });
 

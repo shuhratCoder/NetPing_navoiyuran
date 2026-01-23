@@ -6,6 +6,7 @@ const path = require("path");
 const authRoutes = require("./routes/auth");
 const netPing = require("./routes/netping");
 const user = require("./routes/user");
+const startLogCleaner = require("./routes/deleteLogs");
 
 const app = express();
 
@@ -13,7 +14,7 @@ app.use(cors({ origin: ["https:netping.navoiyuran.uz"] }));
 app.use(express.json());
 
 // MongoDB ulash
-connectDB();
+connectDB().then(()=>{startLogCleaner()})
 
 // Frontend papkasini static qilish
 app.use(express.static(path.join(__dirname, "../Frontend")));

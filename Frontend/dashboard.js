@@ -120,7 +120,7 @@ function renderDeviceCards(devices) {
       (dev) => `
     <div class="col-md-4">
       <div class="device-card">
-        <h5>${dev.name}</h5>
+        <h5>${dev.region}(${dev.name})</h5>
         <small class="text-muted">${dev.ip}</small>
         <hr>
 
@@ -183,7 +183,7 @@ function renderTable(devices) {
   devices.forEach((dev) => {
     tbody.innerHTML += `
       <tr>
-        <td>${dev.name}</td>
+        <td>${dev.region}(${dev.name})</td>
         <td>${dev.ip}</td>
         <td>${dev.sensors.temperature}</td>
         <td>${humidityBadge(dev.sensors.humidity)}</td>
@@ -217,8 +217,7 @@ function renderTable(devices) {
 
 function openHistoryPage(deviceId) {
   // query string orqali yuboramiz
-  window.location.href =
-    `history.html?deviceId=${deviceId}`;
+  window.location.href = `history.html?deviceId=${deviceId}`;
 }
 
 window.openHistoryPage = openHistoryPage;
@@ -309,26 +308,35 @@ function checkDoorAlert(devices) {
 }
 // ----------- LOAD FUNKSIYALAR -----------
 
-async function loadDevices() {
-  try {
-    const res = await authFetch(`${API_BASE}/data`, {
-      headers: buildHeaders(),
-    });
-    if (!res) return;
+async function loadDevices(regionId = "") {
+  let url = `${API_BASE}/data`; // ✅ TO‘G‘RI
 
-    const devices = await res.json();
+  if (regionId) {
+    url += `?region=${regionId}`;
+  }
+
+  const res = await authFetch(url, {
+    headers: buildHeaders(),
+  });
+  if (!res) return;
+
+  const devices = await res.json();
+
+  if (isDashboardPage) {
     renderDeviceCards(devices);
-    // 🚨 SIGNAL TEKSHIRISH
     checkDoorAlert(devices);
-  } catch (err) {
-    console.error("Devices olishda xatolik:", err);
   }
 }
 
-async function loadData() {
+async function loadData(regionId = "") {
+  let url = `${API_BASE}/data`; // ✅ TO‘G‘RI
+
+  if (regionId) {
+    url += `?region=${regionId}`;
+  }
   if (!isDevicesPage) return;
   try {
-    const res = await authFetch(`${API_BASE}/data`, {
+    const res = await authFetch(url, {
       headers: buildHeaders(),
     });
     if (!res) return;
@@ -343,6 +351,14 @@ async function loadData() {
 // ----------- DEVICE QO‘SHISH -----------
 
 const addDeviceForm = document.getElementById("addDeviceForm");
+const addDeviceModal = document.getElementById("addDeviceModal");
+
+if (addDeviceModal) {
+  addDeviceModal.addEventListener("show.bs.modal", () => {
+    loadRegions();
+  });
+}
+
 if (addDeviceForm) {
   addDeviceForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -374,6 +390,41 @@ if (addDeviceForm) {
     }
   });
 }
+
+async function loadRegions() {
+  const regionSelect = document.getElementById("regionSelect"); // modal
+  const regionFilter = document.getElementById("regionFilter"); // dashboard
+  if (!regionSelect && !regionFilter) return;
+
+  try {
+    const res = await authFetch(`${API_BASE}/regionList`, {
+      headers: buildHeaders(),
+    });
+    if (!res) return;
+
+    const regions = await res.json();
+    const options = regions
+      .map((r) => `<option value="${r._id}">${r.region}</option>`)
+      .join("");
+
+    if (regionSelect) {
+      regionSelect.innerHTML =
+        `<option value="">Region tanlang...</option>` + options;
+    }
+
+    if (regionFilter) {
+      regionFilter.innerHTML = `<option value="">All</option>` + options;
+    }
+  } catch (err) {
+    console.error("Regionlarni olishda xato:", err);
+  }
+}
+
+document.getElementById("regionFilter")?.addEventListener("change", (e) => {
+  const regionId = e.target.value;
+  loadDevices(regionId);
+  loadData(regionId);
+});
 
 // ----------- USERS -----------
 
@@ -464,14 +515,23 @@ window.deleteUser = deleteUser;
 
 document.addEventListener("DOMContentLoaded", () => {
   if (isDevicesPage) {
+    loadRegions();
     loadData();
-    setInterval(loadData, 3000);
+    setInterval(() => {
+      const regionId = document.getElementById("regionFilter")?.value || "";
+      loadDevices(regionId);
+      loadData(regionId);
+    }, 3000);
   }
   if (isUsersPage) {
     loadUsers();
   }
   if (isDashboardPage) {
+    loadRegions();
     loadDevices();
-    setInterval(loadDevices, 3000);
+    setInterval(() => {
+      const regionId = document.getElementById("regionFilter")?.value || "";
+      loadDevices(regionId);
+    }, 3000);
   }
 });

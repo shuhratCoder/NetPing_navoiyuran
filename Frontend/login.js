@@ -1,13 +1,15 @@
-const API_LOGIN = "http://localhost:3001"; // /login emas!
+const API_LOGIN = "http://localhost:3001";
 const loginForm = document.getElementById("loginForm");
 const errorMsg = document.getElementById("errorMsg");
 
-// Agar token mavjud bo‘lsa -> dashboardga o'tkazish
 const token = localStorage.getItem("token");
 if (token) {
   window.location.href = "/dashboard.html";
 }
-
+function togglePassword() {
+  const password = document.getElementById("password");
+  password.type = password.type === "password" ? "text" : "password";
+}
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   errorMsg.textContent = "";
@@ -30,7 +32,7 @@ loginForm.addEventListener("submit", async (e) => {
     const data = await res.json();
 
     if (!res.ok) {
-      throw new Error(data.message || "Login xatosi!");
+      throw new Error(data.message || "Login xatosi");
     }
 
     // Saqlash
