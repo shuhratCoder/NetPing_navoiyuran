@@ -14,7 +14,7 @@ const deviceSchema = new mongoose.Schema(
       validate: {
         validator: function (v) {
           return /^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$/.test(
-            v
+            v,
           );
         },
         message: "IP manzil noto‘g‘ri formatda",
@@ -72,8 +72,12 @@ const deviceSchema = new mongoose.Schema(
       //required: [true, "Harakat IO majburiy"],
     },
     regionID: { type: mongoose.Schema.Types.ObjectId, required: true },
+    deviceType: {
+      type: String,
+      required: [true, "Eshik IO majburiy"],
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoose.model("Device", deviceSchema);

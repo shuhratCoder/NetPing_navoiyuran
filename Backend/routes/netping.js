@@ -37,7 +37,7 @@ router.post(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 // Temperature parse
@@ -71,7 +71,7 @@ function parseIO(data) {
 
 // Qurilmalardan ma'lumot olish
 router.get("/data", authenticateToken, role(["admin"]), async (req, res) => {
-   const { region } = req.query;
+  const { region } = req.query;
   let filter = {};
   if (region) {
     filter.regionID = region;
@@ -82,8 +82,9 @@ router.get("/data", authenticateToken, role(["admin"]), async (req, res) => {
 
     for (const dev of devices) {
       const region = await Region.findById(dev.regionID);
+      const deviceType = dev.deviceType;
       const deviceData = {
-        id:dev._id,
+        id: dev._id,
         region: region.region,
         name: dev.name,
         ip: dev.ipAddress,
@@ -102,7 +103,7 @@ router.get("/data", authenticateToken, role(["admin"]), async (req, res) => {
       try {
         const tempRes = await axios.get(
           `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/thermo.cgi?t${dev.temperaturePort}`,
-          { timeout: 3000 }
+          { timeout: 3000 },
         );
 
         deviceData.sensors.temperature = parseTemperature(tempRes.data);
@@ -115,7 +116,7 @@ router.get("/data", authenticateToken, role(["admin"]), async (req, res) => {
       try {
         const humRes = await axios.get(
           `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/relhum.cgi?h${dev.humidityPort}`,
-          { timeout: 3000 }
+          { timeout: 3000 },
         );
         deviceData.sensors.humidity = parseHumidity(humRes.data);
       } catch (e) {
@@ -124,22 +125,39 @@ router.get("/data", authenticateToken, role(["admin"]), async (req, res) => {
       }
 
       // Door
-      try {
-        const doorRes = await axios.get(
-          `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/io.cgi?io${dev.doorIO}`,
-          { timeout: 3000 }
-        );
-        deviceData.sensors.door = parseIO(doorRes.data);
-      } catch (e) {
-        console.error("door", e.message);
-        deviceData.sensors.door = "Error";
+      if (deviceType === "NetPing 4/PWR") {
+        try {
+          const doorRes = await axios.get(
+            `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/io.cgi?io${dev.doorIO}`,
+            { timeout: 3000 },
+          );
+          const doorStatus = parseIO(doorRes.data);
+          if (doorStatus === "1") {
+            deviceData.sensors.door = "0";
+          } else {
+            deviceData.sensors.door = "1";
+          }
+        } catch (e) {
+          console.error("door", e.message);
+          deviceData.sensors.door = "Error";
+        }
+      } else {
+        try {
+          const doorRes = await axios.get(
+            `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/io.cgi?io${dev.doorIO}`,
+            { timeout: 3000 },
+          );
+          deviceData.sensors.door = parseIO(doorRes.data);
+        } catch (e) {
+          console.error("door", e.message);
+          deviceData.sensors.door = "Error";
+        }
       }
-
       // Movement
       try {
         const movRes = await axios.get(
           `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/io.cgi?io${dev.movementIO}`,
-          { timeout: 3000 }
+          { timeout: 3000 },
         );
         deviceData.sensors.movement = parseIO(movRes.data);
       } catch (e) {
@@ -150,7 +168,7 @@ router.get("/data", authenticateToken, role(["admin"]), async (req, res) => {
       try {
         const fireRes = await axios.get(
           `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/io.cgi?io${dev.fireIO}`,
-          { timeout: 3000 }
+          { timeout: 3000 },
         );
         deviceData.sensors.fire = parseIO(fireRes.data);
       } catch (e) {
@@ -162,7 +180,7 @@ router.get("/data", authenticateToken, role(["admin"]), async (req, res) => {
       try {
         const alarmRes = await axios.get(
           `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/io.cgi?io${dev.alarmIO}`,
-          { timeout: 3000 }
+          { timeout: 3000 },
         );
         deviceData.sensors.alarm = parseIO(alarmRes.data);
       } catch (e) {
@@ -190,7 +208,7 @@ router.post(
       const device = await Device.findOne({ ipAddress: deviceIp });
 
       await axios.get(
-        `http://${device.username}:${device.password}@${device.ipAddress}:${device.httpPort}/io.cgi?io4=1`
+        `http://${device.username}:${device.password}@${device.ipAddress}:${device.httpPort}/io.cgi?io4=1`,
       );
       res.json({ success: true, message: "Signalizatsiya o‘chirildi" });
     } catch (err) {
@@ -198,7 +216,7 @@ router.post(
         .status(500)
         .json({ success: false, message: "Xatolik", error: err.message });
     }
-  }
+  },
 );
 
 // Signalizatsiyani yoqish
@@ -211,7 +229,7 @@ router.post(
       let deviceIp = req.body.ip;
       const device = await Device.findOne({ ipAddress: deviceIp });
       await axios.get(
-        `http://${device.username}:${device.password}@${device.ipAddress}:${device.httpPort}/io.cgi?io4=0`
+        `http://${device.username}:${device.password}@${device.ipAddress}:${device.httpPort}/io.cgi?io4=0`,
       );
       res.json({ success: true, message: "Signalizatsiya yoqildi" });
     } catch (err) {
@@ -219,7 +237,7 @@ router.post(
         .status(500)
         .json({ success: false, message: "Xatolik", error: err.message });
     }
-  }
+  },
 );
 
 router.post(
@@ -232,7 +250,7 @@ router.post(
       const acIP = req.body.ip;
       const device = await Device.findOne({ acIP: acIP });
       await axios.get(
-        `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=5`
+        `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=5`,
       );
       res.json({ success: true, message: `Pulut ${command} yuborildi` });
     } catch (err) {
@@ -240,7 +258,7 @@ router.post(
         .status(500)
         .json({ success: false, message: "Xatolik", error: err.message });
     }
-  }
+  },
 );
 
 router.post(
@@ -253,7 +271,7 @@ router.post(
       const acIP = req.body.ip;
       const device = await Device.findOne({ acIP: acIP });
       await axios.get(
-        `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=6`
+        `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=6`,
       );
       res.json({ success: true, message: `Pulut ${command} yuborildi` });
     } catch (err) {
@@ -261,7 +279,7 @@ router.post(
         .status(500)
         .json({ success: false, message: "Xatolik", error: err.message });
     }
-  }
+  },
 );
 
 router.post(
@@ -274,7 +292,7 @@ router.post(
       const acIP = req.body.ip;
       const device = await Device.findOne({ acIP: acIP });
       await axios.get(
-        `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=4`
+        `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=4`,
       );
       res.json({ success: true, message: `Pulut ${command} yuborildi` });
     } catch (err) {
@@ -282,7 +300,7 @@ router.post(
         .status(500)
         .json({ success: false, message: "Xatolik", error: err.message });
     }
-  }
+  },
 );
 
 router.post(
@@ -295,7 +313,7 @@ router.post(
       const acIP = req.body.ip;
       const device = await Device.findOne({ acIP: acIP });
       await axios.get(
-        `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=3`
+        `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=3`,
       );
       res.json({ success: true, message: `Pulut ${command} yuborildi` });
     } catch (err) {
@@ -303,7 +321,7 @@ router.post(
         .status(500)
         .json({ success: false, message: "Xatolik", error: err.message });
     }
-  }
+  },
 );
 
 router.post(
@@ -316,7 +334,7 @@ router.post(
       const acIP = req.body.ip;
       const device = await Device.findOne({ acIP: acIP });
       await axios.get(
-        `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=1`
+        `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=1`,
       );
       res.json({ success: true, message: `Pulut ${command} yuborildi` });
     } catch (err) {
@@ -324,7 +342,7 @@ router.post(
         .status(500)
         .json({ success: false, message: "Xatolik", error: err.message });
     }
-  }
+  },
 );
 
 router.post(
@@ -337,7 +355,7 @@ router.post(
       const acIP = req.body.ip;
       const device = await Device.findOne({ acIP: acIP });
       await axios.get(
-        `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=2`
+        `http://${device.username}:${device.password}@${device.acIP}:${device.httpPort}/ir.cgi?play=2`,
       );
       res.json({ success: true, message: `Pulut ${command} yuborildi` });
     } catch (err) {
@@ -345,7 +363,7 @@ router.post(
         .status(500)
         .json({ success: false, message: "Xatolik", error: err.message });
     }
-  }
+  },
 );
 
 async function saveLog() {
@@ -354,14 +372,44 @@ async function saveLog() {
     for (const dev of devices) {
       const tempRes = await axios.get(
         `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/thermo.cgi?t${dev.temperaturePort}`,
-        { timeout: 3000 }
+        { timeout: 2000 },
       );
       const doorRes = await axios.get(
         `http://${dev.username}:${dev.password}@${dev.ipAddress}:${dev.httpPort}/io.cgi?io${dev.doorIO}`,
-        { timeout: 3000 }
+        { timeout: 2000 },
       );
       const temp = Number(parseTemperature(tempRes.data));
-      const door = Number(parseIO(doorRes.data));
+      let door = Number(parseIO(doorRes.data));
+      const region = await Region.findById(dev.regionID);
+      if (dev.deviceType === "NetPing 4/PWR" && door === 1) {
+        door = 0;
+      } else if (dev.deviceType === "NetPing 4/PWR" && door === 0) {
+        door = 1;
+      }
+      if (door === 1) {
+        const sendSms = await axios.post(
+          "http://192.168.11.3/sendsms.cgi?utf8",
+          `[+998976772301] ${region.region} ${dev.name} eshik ochildi`,
+          {
+            auth: { username: "admin", password: "admin" },
+            headers: { "Content-Type": "text/plain" },
+            timeout: 3000,
+          },
+        );
+        console.log(sendSms.data);
+      }
+      if (temp>30) {
+        const sendSms = await axios.post(
+          "http://192.168.11.3/sendsms.cgi?utf8",
+          `[+998976772301,+998939579093,+998934327743] ${region.region} ${dev.name} ${temp} gradusga ko'tarildi`,
+          {
+            auth: { username: "admin", password: "admin" },
+            headers: { "Content-Type": "text/plain" },
+            timeout: 3000,
+          },
+        );
+        console.log(sendSms.data);
+      }
       const log = new Log({
         deviceId: dev._id, // MUHIM
         temp,
@@ -373,7 +421,7 @@ async function saveLog() {
     console.error(err.message);
   }
 }
-setInterval(saveLog, 5 * 60 * 100);
+setInterval(saveLog, 5 * 1000);
 
 router.get("/history/:id", authenticateToken, async (req, res) => {
   try {
@@ -388,18 +436,18 @@ router.get("/history/:id", authenticateToken, async (req, res) => {
       deviceId: id,
       createdAt: {
         $gte: new Date(Number(from)),
-        $lte: new Date(Number(to))
-      }
+        $lte: new Date(Number(to)),
+      },
     }).sort({ createdAt: 1 });
 
     const temperature = logs.map((l) => ({
       time: l.createdAt,
-      value: l.temp
+      value: l.temp,
     }));
 
     const door = logs.map((l) => ({
       time: l.createdAt,
-      value: l.door
+      value: l.door,
     }));
 
     res.json({ temperature, door });

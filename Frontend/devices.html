@@ -275,11 +275,17 @@
               placeholder="Alarm IO"
             />
             <select
-              class="form-select"
+              class="form-select mb-2"
               id="regionSelect"
               name="regionID"
               required
             ></select>
+
+            <select class="form-select mb-2" name="deviceType" required>
+              <option selected>Device type</option>
+              <option value="NetPing 4/PWR">NetPing 4/PWR</option>
+              <option value="0">Other</option>
+            </select>
           </div>
           <div class="modal-footer">
             <button class="btn btn-secondary" data-bs-dismiss="modal">
