@@ -1,5 +1,3 @@
-//const API_BASE = "http://localhost:3001/netping";
-
 function getToken() {
   return localStorage.getItem("token");
 }

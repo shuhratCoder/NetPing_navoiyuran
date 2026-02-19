@@ -365,7 +365,7 @@ router.post(
     }
   },
 );
-
+const doorStateMemory = {};
 async function saveLog() {
   try {
     const devices = await Device.find();
@@ -379,26 +379,42 @@ async function saveLog() {
         { timeout: 2000 },
       );
       const temp = Number(parseTemperature(tempRes.data));
-      let door = Number(parseIO(doorRes.data));
+      let currentDoor = Number(parseIO(doorRes.data));
       const region = await Region.findById(dev.regionID);
-      if (dev.deviceType === "NetPing 4/PWR" && door === 1) {
-        door = 0;
-      } else if (dev.deviceType === "NetPing 4/PWR" && door === 0) {
-        door = 1;
+      if (dev.deviceType === "NetPing 4/PWR" && currentDoor === 1) {
+        currentDoor = 0;
+      } else if (dev.deviceType === "NetPing 4/PWR" && currentDoor === 0) {
+        currentDoor = 1;
       }
-      if (door === 1) {
-        const sendSms = await axios.post(
-          "http://192.168.11.3/sendsms.cgi?utf8",
-          `[+998976772301] ${region.region} ${dev.name} eshik ochildi`,
-          {
-            auth: { username: "admin", password: "admin" },
-            headers: { "Content-Type": "text/plain" },
-            timeout: 3000,
-          },
-        );
-        console.log(sendSms.data);
+      const deviceKey = dev.ipAddress;
+
+      // 🔹 Birinchi marta ko‘rilsa initialize qilamiz
+      if (doorStateMemory[deviceKey] === undefined) {
+        doorStateMemory[deviceKey] = currentDoor;
       }
-      if (temp>30) {
+
+      const previousDoor = doorStateMemory[deviceKey];
+
+      if (previousDoor === 0 && currentDoor === 1) {
+        try {
+          const sendSms = await axios.post(
+            "http://192.168.11.3/sendsms.cgi?utf8",
+            `[+998976772301,+998939579093,+998934327743] ${region.region} ${dev.name} eshik ochildi`,
+            {
+              auth: { username: "admin", password: "admin" },
+              headers: { "Content-Type": "text/plain" },
+              timeout: 3000,
+            },
+          );
+          console.log("SMS yuborildi:", sendSms.data);
+        } catch (error) {
+          console.error("SMS xato:", error.message);
+        }
+      }
+
+      // Oxirgi holatni saqlab qo'yamiz
+      doorStateMemory[deviceKey] = currentDoor;
+      if (temp > 30) {
         const sendSms = await axios.post(
           "http://192.168.11.3/sendsms.cgi?utf8",
           `[+998976772301,+998939579093,+998934327743] ${region.region} ${dev.name} ${temp} gradusga ko'tarildi`,
@@ -413,7 +429,7 @@ async function saveLog() {
       const log = new Log({
         deviceId: dev._id, // MUHIM
         temp,
-        door,
+        currentDoor,
       });
       await log.save();
     }
@@ -447,7 +463,7 @@ router.get("/history/:id", authenticateToken, async (req, res) => {
 
     const door = logs.map((l) => ({
       time: l.createdAt,
-      value: l.door,
+      value: l.currentDoor,
     }));
 
     res.json({ temperature, door });

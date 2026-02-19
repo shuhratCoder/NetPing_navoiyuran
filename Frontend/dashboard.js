@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:3001/netping";
+const API_BASE = "http://192.168.8.222:3001/netping";
 // Frontend/js/dashboard.js
 
 let currentACIp = null;

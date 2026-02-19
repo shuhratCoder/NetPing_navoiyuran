@@ -26,5 +26,5 @@ app.use("/netping", user);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, "0.0.0.0", () =>
-  console.log(`Server http://192.168.11.11:${PORT} da ishga tushdi`)
+  console.log(`Server http://192.168.8.222:${PORT} da ishga tushdi`)
 );

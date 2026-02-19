@@ -1,4 +1,4 @@
-const API_LOGIN = "http://localhost:3001";
+const API_LOGIN = "http://192.168.8.222:3001";
 const loginForm = document.getElementById("loginForm");
 const errorMsg = document.getElementById("errorMsg");
 

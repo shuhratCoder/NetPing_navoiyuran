@@ -11,7 +11,7 @@ const logSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    door: {
+    currentDoor: {
       type: Number, // 0 yoki 1
       required: true,
     },
