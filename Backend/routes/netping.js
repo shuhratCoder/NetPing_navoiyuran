@@ -414,7 +414,7 @@ async function saveLog() {
 
       // Oxirgi holatni saqlab qo'yamiz
       doorStateMemory[deviceKey] = currentDoor;
-      if (temp > 30) {
+      if (temp > 50) {
         const sendSms = await axios.post(
           "http://192.168.11.3/sendsms.cgi?utf8",
           `[+998976772301,+998939579093,+998934327743] ${region.region} ${dev.name} ${temp} gradusga ko'tarildi`,
